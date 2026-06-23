@@ -7,7 +7,6 @@ blocks that the PR author can apply manually.
 
 The agent reviews changed behavior rather than style. It looks for bugs,
 regressions, security issues, rollout risk, and materially missing tests.
-This is a test line to force deploy.
 
 ## How it works
 
@@ -37,6 +36,8 @@ Use these settings:
 - **GitHub App name**: `code-reviewer`, or another name that matches
   `GITHUB_APP_SLUG`.
 - **Homepage URL**: your deployed Eve app URL.
+- **Callback URL**: leave blank.
+- **Request user authorization (OAuth) during installation**: disabled.
 - **Webhook**: active.
 - **Webhook URL**: `https://<your-eve-deployment>/eve/v1/github`.
 - **Webhook secret**: a long random value. Save the same value as
@@ -82,6 +83,9 @@ mention-driven workflow.
 
 ## Environment
 
+The registry installs a `.env.example` template. Put real secret values in your
+deployment environment.
+
 Set the GitHub App credentials:
 
 ```bash
@@ -98,12 +102,16 @@ value above, the trigger is:
 @code-reviewer review this
 ```
 
-Set Upstash Redis credentials for rate limiting:
+Set Vercel Redis/Upstash Marketplace REST credentials for rate limiting:
 
 ```bash
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
 ```
+
+Do not use the read-only token for this agent. Rate limiting writes cooldown and
+review publication keys. `KV_URL` and `REDIS_URL` are Redis protocol URLs and
+are not used by this REST client.
 
 The default rate limits are intentionally stricter on public repositories:
 
@@ -129,8 +137,9 @@ Before testing from GitHub, confirm:
 
 - The Eve app is deployed and has a POST webhook route at
   `https://<your-eve-deployment>/eve/v1/github`.
-- The deployment has GitHub App credentials, Upstash Redis credentials, and a
-  model credential such as Vercel AI Gateway OIDC or `AI_GATEWAY_API_KEY`.
+- The deployment has GitHub App credentials, Upstash Redis REST credentials,
+  and a model credential such as Vercel AI Gateway OIDC or
+  `AI_GATEWAY_API_KEY`.
 - The GitHub App is installed on the repository that contains the pull request.
 - The app has **Contents: read**, **Issues: read/write**, and **Pull requests:
   read/write** on that repository.
