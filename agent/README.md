@@ -7,6 +7,7 @@ blocks that the PR author can apply manually.
 
 The agent reviews changed behavior rather than style. It looks for bugs,
 regressions, security issues, rollout risk, and materially missing tests.
+This is a test line to force deploy.
 
 ## How it works
 
