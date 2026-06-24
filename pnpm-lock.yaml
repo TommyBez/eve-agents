@@ -45,6 +45,34 @@ importers:
         specifier: 7.0.0-dev.20260523.1
         version: 7.0.0-dev.20260523.1
 
+  apps/postgres-data-analyst:
+    dependencies:
+      '@vercel/connect':
+        specifier: 0.2.7
+        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+      ai:
+        specifier: 7.0.0-beta.178
+        version: 7.0.0-beta.178(zod@4.3.6)
+      eve:
+        specifier: ^0.11.10
+        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      pg:
+        specifier: ^8.22.0
+        version: 8.22.0
+      pgsql-ast-parser:
+        specifier: ^12.0.2
+        version: 12.0.2
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: 24.x
+        version: 24.13.2
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260523.1
+        version: 7.0.0-dev.20260523.1
+
 packages:
 
   '@ai-sdk/gateway@4.0.0-beta.109':
@@ -284,8 +312,32 @@ packages:
     resolution: {integrity: sha512-LMRMEai3Z+BODyxGcU9+KiWrS/UElNiOLKiNRfGNt2Vu3NTEmXgFeXG9wBfocAnTe5yJCX/DY6k3k7S/LkPp/g==}
     engines: {node: '>= 18'}
 
+  '@vercel/cli-exec@1.0.0':
+    resolution: {integrity: sha512-kQF8LGie/Hbdq9/psJxLE7owRTcqMQMhgybU04gCeR7cbQAr5t8OrjefDNColJv1QSSucFt4pLwRiARVmlOnug==}
+    engines: {node: '>= 18'}
+
   '@vercel/connect@0.2.2':
     resolution: {integrity: sha512-XJti9hGkjoMp1BrHIbAsTyl7kseALOWtizYe6S3C3RAq8xDW4OcdLVPYjowkqE0KRuIzhIzIwtpHPfqohqLG1w==}
+    peerDependencies:
+      '@ai-sdk/mcp': ^1 || ^2
+      '@auth/core': '>=0.37.0'
+      ai: 7.0.0-beta.178
+      better-auth: '>=1.5.0'
+      eve: '>=0.6.0-beta.1'
+    peerDependenciesMeta:
+      '@ai-sdk/mcp':
+        optional: true
+      '@auth/core':
+        optional: true
+      ai:
+        optional: true
+      better-auth:
+        optional: true
+      eve:
+        optional: true
+
+  '@vercel/connect@0.2.7':
+    resolution: {integrity: sha512-MxNmQ+J6hbPtU5L7ZvQJjJyLmax+NF1KxaXTSQDm/lw3+yemI53iGRVfqUFvQgX6Hx1pgpGfQTS0ZVfdogmFnw==}
     peerDependencies:
       '@ai-sdk/mcp': ^1 || ^2
       '@auth/core': '>=0.37.0'
@@ -312,6 +364,10 @@ packages:
     resolution: {integrity: sha512-8ipTFoiX3WBRrvXLjSrmgAiwtMDQk3EgSxe8N7v2rXBz39NBIIyoGXeVbJRoBcP8WEuVnvjvIQsggbGU7ZKrMw==}
     engines: {node: '>= 20'}
 
+  '@vercel/oidc@3.7.0':
+    resolution: {integrity: sha512-FWmULATInXyxER8FJjtSEUdoaoeqWv9G9T4y3vraYMJNAx/ox354COtDmhiBb/XaeDjFuiwTY9ss44NRBaGjLQ==}
+    engines: {node: '>= 20'}
+
   '@workflow/serde@4.1.0':
     resolution: {integrity: sha512-pav4F2BoirECWR7Nf1TKt+2eETcBj7jj4cBefQ8VXQCA6NPkaKeLfj/zMgi+3zYV5ZIBT4GuUiphsj0/b9hPQQ==}
 
@@ -320,6 +376,9 @@ packages:
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
+
+  commander@2.20.3:
+    resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
   consola@3.4.2:
     resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
@@ -360,6 +419,9 @@ packages:
       sqlite3:
         optional: true
 
+  discontinuous-range@1.0.0:
+    resolution: {integrity: sha512-c68LpLbO+7kP/b1Hr1qs8/BJ09F5khZGTxqxZuhzxpmwJKOgRFHJWIb9/KmqnqHhLdO55aOxFH/EGBvUQbL/RQ==}
+
   env-runner@0.1.14:
     resolution: {integrity: sha512-qdk5mmgFsd+zPg3r1bkZ+IbvpfUfypyDvNhMGypSMRpz7kOa/kI6SpW8fgyukuEM4Lo24M65r+1Ne0DtT7vFBA==}
     hasBin: true
@@ -376,6 +438,47 @@ packages:
       miniflare:
         optional: true
       wrangler:
+        optional: true
+
+  eve@0.11.10:
+    resolution: {integrity: sha512-vMjqknf+8pSL4kpm8uQI6N1r7KcLDqJuouN6updVqELlfWU7ndVNJ5rxBagM8C202owuh5JtCVnnxyHEz7EPFA==}
+    engines: {node: '>=24'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.0.0
+      '@sveltejs/kit': ^2.0.0
+      ai: 7.0.0-beta.178
+      braintrust: ^3.0.0
+      just-bash: ^3.0.0
+      microsandbox: ^0.5.0
+      next: ^16.0.0
+      nuxt: ^4.0.0
+      react: ^19.0.0
+      svelte: ^5.0.0
+      vite: ^8.0.0
+      vue: ^3.5.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      braintrust:
+        optional: true
+      just-bash:
+        optional: true
+      microsandbox:
+        optional: true
+      next:
+        optional: true
+      nuxt:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vite:
+        optional: true
+      vue:
         optional: true
 
   eve@0.13.3:
@@ -474,6 +577,13 @@ packages:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
 
+  moo@0.5.3:
+    resolution: {integrity: sha512-m2fmM2dDm7GZQsY7KK2cme8agi+AAljILjQnof7p1ZMDe6dQ4bdnSMx0cPppudoeNv5hEFQirN6u+O4fDE0IWA==}
+
+  nearley@2.20.1:
+    resolution: {integrity: sha512-+Mc8UaAebFzgV+KpI5n7DasuuQCHA89dmwm7JXw3TV43ukfNQ9DnBH3Mdb2g/I4Fdxc26pwimBWvjIw0UAILSQ==}
+    hasBin: true
+
   nf3@0.3.17:
     resolution: {integrity: sha512-N9zEWySuJFw+gR0lhS5863YsvNeudOdqRyFvNb+jMXbeTJOdrjDqkCpDginIZfUm0LzT1t1nCRiDeqQm/8kirQ==}
 
@@ -536,6 +646,70 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
+  pg-cloudflare@1.4.0:
+    resolution: {integrity: sha512-Vo7z/6rrQYxpNRylp4Tlob2elzbh+N/MOQbxFVWCxS7oEx6jF53GTJFxK2WWpKuBRkmiin4Mt+xofFDjx09R0A==}
+
+  pg-connection-string@2.14.0:
+    resolution: {integrity: sha512-XwWDGcLRGCXAR8F/AM5bG7Q+A3Wm2s6QeEjlOKZLlH3UYcguiqCWKyWXVag5TLTIjR7oOJUY8kcADaZgWPyLeg==}
+
+  pg-int8@1.0.1:
+    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
+    engines: {node: '>=4.0.0'}
+
+  pg-pool@3.14.0:
+    resolution: {integrity: sha512-gKtPkFdQPU3DksooVLi9LsjZxrsBUZIpa+7aVx+LV5pNh0KzP4Zleud2po+ConrxbuXGBJ6Hfer6hdgpIBpBaw==}
+    peerDependencies:
+      pg: '>=8.0'
+
+  pg-protocol@1.15.0:
+    resolution: {integrity: sha512-cq9sECI5s0+uPUXjbz8ioyPJni6RzsRib0US67i5IoTZKw8fNeYlVE7u8F4dG7vEJJtc5wdD1K189lCCUwqWTQ==}
+
+  pg-types@2.2.0:
+    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
+    engines: {node: '>=4'}
+
+  pg@8.22.0:
+    resolution: {integrity: sha512-8wih1vVIBMxoUM2oB4soJsD9tDnDpLv4OXBJ+EJzFsvycD+lfyIreC2gGHq78f8jbLLt+bvlPTFdFZfJkOuzAA==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pgpass@1.0.5:
+    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
+  pgsql-ast-parser@12.0.2:
+    resolution: {integrity: sha512-1WWa96Sw6h4uv9GLw98EzH/+xoBTC8j2TwV/AMW3E+Ir/fHOu/jLLbj6kPiz3y2bGISTKNYvKWwHoqvQ5FLuAw==}
+
+  postgres-array@2.0.0:
+    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
+    engines: {node: '>=4'}
+
+  postgres-bytea@1.0.1:
+    resolution: {integrity: sha512-5+5HqXnsZPE65IJZSMkZtURARZelel2oXUEO8rH83VS/hxH5vv1uHquPg5wZs8yMAfdv971IU+kcPUczi7NVBQ==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-date@1.0.7:
+    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-interval@1.2.0:
+    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
+    engines: {node: '>=0.10.0'}
+
+  railroad-diagrams@1.0.0:
+    resolution: {integrity: sha512-cz93DjNeLY0idrCNOH6PviZGRN9GJhsdm9hpn1YCS879fj4W+x5IFJhhkRZcwVgMmFF7R82UA/7Oh+R8lLZg6A==}
+
+  randexp@0.4.6:
+    resolution: {integrity: sha512-80WNmd9DA0tmZrw9qQa62GPPWfuXJknrmVmLcxvq4uZBdYqb1wYoKTmnlGUchvVWe0XiLupYkBoXVOxz3C8DYQ==}
+    engines: {node: '>=0.12'}
+
+  ret@0.1.15:
+    resolution: {integrity: sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==}
+    engines: {node: '>=0.12'}
+
   rolldown@1.1.2:
     resolution: {integrity: sha512-x0CrQQqCXWGeI8dTvFfN/Dnv3yMKT9hv5jFjlOreKAx9wqLq9wz7VvLLHyaAXC90/CpggTu9SisSbsJJTPSjNQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -554,6 +728,10 @@ packages:
 
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
+
+  split2@4.2.0:
+    resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
+    engines: {node: '>= 10.x'}
 
   srvx@0.11.16:
     resolution: {integrity: sha512-bp07zRuycfTY43IjAvvTFnmnJi8ikW0VFiHwOhhYcVW/L4xQ1XY4PAd4Nuum1rsA17C39zL7x+CDhrn5AL32Rw==}
@@ -666,6 +844,10 @@ packages:
   xdg-portable@7.3.0:
     resolution: {integrity: sha512-sqMMuL1rc0FmMBOzCpd0yuy9trqF2yTTVe+E9ogwCSWQCdDEtQUwrZPT6AxqtsFGRNxycgncbP/xmOOSPw5ZUw==}
     engines: {node: '>= 6.0'}
+
+  xtend@4.0.2:
+    resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
+    engines: {node: '>=0.4'}
 
   zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
@@ -852,6 +1034,10 @@ snapshots:
     dependencies:
       execa: 5.1.1
 
+  '@vercel/cli-exec@1.0.0':
+    dependencies:
+      execa: 5.1.1
+
   '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
     dependencies:
       '@vercel/oidc': 3.6.1
@@ -859,12 +1045,25 @@ snapshots:
       ai: 7.0.0-beta.178(zod@4.3.6)
       eve: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
 
+  '@vercel/connect@0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
+    dependencies:
+      '@vercel/oidc': 3.7.0
+    optionalDependencies:
+      ai: 7.0.0-beta.178(zod@4.3.6)
+      eve: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+
   '@vercel/oidc@3.2.0': {}
 
   '@vercel/oidc@3.6.1':
     dependencies:
       '@vercel/cli-config': 0.2.0
       '@vercel/cli-exec': 0.1.1
+      jose: 5.10.0
+
+  '@vercel/oidc@3.7.0':
+    dependencies:
+      '@vercel/cli-config': 0.2.0
+      '@vercel/cli-exec': 1.0.0
       jose: 5.10.0
 
   '@workflow/serde@4.1.0': {}
@@ -875,6 +1074,8 @@ snapshots:
       '@ai-sdk/provider': 4.0.0-beta.19
       '@ai-sdk/provider-utils': 5.0.0-beta.49(zod@4.3.6)
       zod: 4.3.6
+
+  commander@2.20.3: {}
 
   consola@3.4.2: {}
 
@@ -890,12 +1091,57 @@ snapshots:
 
   db0@0.3.4: {}
 
+  discontinuous-range@1.0.0: {}
+
   env-runner@0.1.14:
     dependencies:
       crossws: 0.4.6(srvx@0.11.16)
       exsolve: 1.0.8
       httpxy: 0.5.3
       srvx: 0.11.16
+
+  eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
+    dependencies:
+      ai: 7.0.0-beta.178(zod@4.3.6)
+      nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@netlify/blobs'
+      - '@netlify/runtime'
+      - '@planetscale/database'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - '@vercel/queue'
+      - aws4fetch
+      - better-sqlite3
+      - chokidar
+      - dotenv
+      - drizzle-orm
+      - giget
+      - idb-keyval
+      - ioredis
+      - jiti
+      - lru-cache
+      - miniflare
+      - mongodb
+      - mysql2
+      - rollup
+      - sqlite3
+      - uploadthing
+      - wrangler
+      - xml2js
+      - zephyr-agent
 
   eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
     dependencies:
@@ -983,6 +1229,15 @@ snapshots:
 
   mimic-fn@2.1.0: {}
 
+  moo@0.5.3: {}
+
+  nearley@2.20.1:
+    dependencies:
+      commander: 2.20.3
+      moo: 0.5.3
+      railroad-diagrams: 1.0.0
+      randexp: 0.4.6
+
   nf3@0.3.17: {}
 
   nitro@3.0.260610-beta(@upstash/redis@1.38.0):
@@ -1055,6 +1310,65 @@ snapshots:
 
   pathe@2.0.3: {}
 
+  pg-cloudflare@1.4.0:
+    optional: true
+
+  pg-connection-string@2.14.0: {}
+
+  pg-int8@1.0.1: {}
+
+  pg-pool@3.14.0(pg@8.22.0):
+    dependencies:
+      pg: 8.22.0
+
+  pg-protocol@1.15.0: {}
+
+  pg-types@2.2.0:
+    dependencies:
+      pg-int8: 1.0.1
+      postgres-array: 2.0.0
+      postgres-bytea: 1.0.1
+      postgres-date: 1.0.7
+      postgres-interval: 1.2.0
+
+  pg@8.22.0:
+    dependencies:
+      pg-connection-string: 2.14.0
+      pg-pool: 3.14.0(pg@8.22.0)
+      pg-protocol: 1.15.0
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.4.0
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
+
+  pgsql-ast-parser@12.0.2:
+    dependencies:
+      moo: 0.5.3
+      nearley: 2.20.1
+
+  postgres-array@2.0.0: {}
+
+  postgres-bytea@1.0.1: {}
+
+  postgres-date@1.0.7: {}
+
+  postgres-interval@1.2.0:
+    dependencies:
+      xtend: 4.0.2
+
+  railroad-diagrams@1.0.0: {}
+
+  randexp@0.4.6:
+    dependencies:
+      discontinuous-range: 1.0.0
+      ret: 0.1.15
+
+  ret@0.1.15: {}
+
   rolldown@1.1.2:
     dependencies:
       '@oxc-project/types': 0.137.0
@@ -1085,6 +1399,8 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   signal-exit@3.0.7: {}
+
+  split2@4.2.0: {}
 
   srvx@0.11.16: {}
 
@@ -1128,6 +1444,8 @@ snapshots:
   xdg-portable@7.3.0:
     dependencies:
       os-paths: 4.4.0
+
+  xtend@4.0.2: {}
 
   zod@4.1.11: {}
 
