@@ -45,6 +45,28 @@ importers:
         specifier: 7.0.0-dev.20260523.1
         version: 7.0.0-dev.20260523.1
 
+  apps/linear-operation-agent:
+    dependencies:
+      '@vercel/connect':
+        specifier: 0.2.7
+        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+      ai:
+        specifier: 7.0.0-beta.178
+        version: 7.0.0-beta.178(zod@4.3.6)
+      eve:
+        specifier: ^0.11.10
+        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: 24.x
+        version: 24.13.2
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260523.1
+        version: 7.0.0-dev.20260523.1
+
   apps/postgres-data-analyst:
     dependencies:
       '@vercel/connect':
