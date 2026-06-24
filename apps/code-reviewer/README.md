@@ -180,5 +180,5 @@ pnpm install
 pnpm dev
 ```
 
-Run `pnpm info` to inspect the Eve surface and `pnpm build` before opening a PR.
-Use `pnpm eval -- --skip-report` for lightweight agent behavior checks.
+Run `pnpm run info` to inspect the Eve surface and `pnpm run build` before opening a PR.
+Use `pnpm run eval -- --skip-report` for lightweight agent behavior checks.

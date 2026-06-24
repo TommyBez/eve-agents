@@ -1,28 +1,19 @@
 {
   "name": "eve-test",
   "version": "0.0.0",
+  "private": true,
   "type": "module",
-  "imports": {
-    "#*": "./agent/*",
-    "#evals/*": "./evals/*"
-  },
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "eve build",
-    "dev": "eve dev",
-    "start": "eve start",
-    "typecheck": "tsgo"
-  },
-  "dependencies": {
-    "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.0",
-    "@vercel/connect": "0.2.2",
-    "ai": "7.0.0-beta.178",
-    "eve": "^0.13.3",
-    "zod": "4.3.6"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "eval": "turbo run eval",
+    "info": "turbo run info",
+    "start": "turbo run start",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "@types/node": "24.x",
-    "@typescript/native-preview": "7.0.0-dev.20260523.1"
+    "turbo": "^2.9.18"
   },
   "overrides": {
     "ai": "7.0.0-beta.178"

@@ -13,11 +13,11 @@ import {
   claimReviewPublication,
   type RateLimitDecision,
   shouldPostCooldownReply,
-} from "../lib/review-rate-limit";
+} from "../lib/review-rate-limit.js";
 import submitPrReviewTool, {
   type SubmitPrReviewComment,
   type SubmitPrReviewOutput,
-} from "../tools/submit_pr_review";
+} from "../tools/submit_pr_review.js";
 
 const BOT_NAME = process.env.GITHUB_APP_SLUG || "code-reviewer";
 const BOT_MENTION_PATTERN = new RegExp(
