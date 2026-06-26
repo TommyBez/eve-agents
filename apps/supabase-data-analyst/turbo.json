@@ -1,0 +1,103 @@
+{
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "env": [
+        "SUPABASE_ANALYST_ALLOWED_SCHEMAS",
+        "SUPABASE_ANALYST_BLOCKED_TABLES",
+        "SUPABASE_ANALYST_MAX_ROWS",
+        "SUPABASE_ANALYST_MCP_URL",
+        "SUPABASE_ANALYST_PROJECT_REF",
+        "SUPABASE_ANALYST_READ_ONLY",
+        "SUPABASE_ANALYST_SLACK_CONNECT_UID",
+        "SUPABASE_CONNECT_UID",
+        "NODE_ENV",
+        "VERCEL",
+        "VERCEL_ENV"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "$TURBO_ROOT$/tsconfig.base.json"
+      ],
+      "outputs": [
+        ".eve/**",
+        ".output/**"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "passThroughEnv": [
+        "AI_GATEWAY_API_KEY",
+        "PORT",
+        "SUPABASE_ANALYST_ALLOWED_SCHEMAS",
+        "SUPABASE_ANALYST_BLOCKED_TABLES",
+        "SUPABASE_ANALYST_MAX_ROWS",
+        "SUPABASE_ANALYST_MCP_URL",
+        "SUPABASE_ANALYST_PROJECT_REF",
+        "SUPABASE_ANALYST_READ_ONLY",
+        "SUPABASE_ANALYST_SLACK_CONNECT_UID",
+        "SUPABASE_CONNECT_UID",
+        "VERCEL_OIDC_TOKEN"
+      ],
+      "persistent": true
+    },
+    "eval": {
+      "cache": false,
+      "passThroughEnv": [
+        "AI_GATEWAY_API_KEY",
+        "SUPABASE_ANALYST_ALLOWED_SCHEMAS",
+        "SUPABASE_ANALYST_BLOCKED_TABLES",
+        "SUPABASE_ANALYST_MAX_ROWS",
+        "SUPABASE_ANALYST_MCP_URL",
+        "SUPABASE_ANALYST_PROJECT_REF",
+        "SUPABASE_ANALYST_READ_ONLY",
+        "SUPABASE_ANALYST_SLACK_CONNECT_UID",
+        "SUPABASE_CONNECT_UID",
+        "VERCEL_OIDC_TOKEN"
+      ]
+    },
+    "info": {
+      "cache": false,
+      "passThroughEnv": [
+        "SUPABASE_ANALYST_SLACK_CONNECT_UID",
+        "SUPABASE_CONNECT_UID"
+      ]
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
+      "cache": false,
+      "passThroughEnv": [
+        "AI_GATEWAY_API_KEY",
+        "PORT",
+        "SUPABASE_ANALYST_ALLOWED_SCHEMAS",
+        "SUPABASE_ANALYST_BLOCKED_TABLES",
+        "SUPABASE_ANALYST_MAX_ROWS",
+        "SUPABASE_ANALYST_MCP_URL",
+        "SUPABASE_ANALYST_PROJECT_REF",
+        "SUPABASE_ANALYST_READ_ONLY",
+        "SUPABASE_ANALYST_SLACK_CONNECT_UID",
+        "SUPABASE_CONNECT_UID",
+        "VERCEL_OIDC_TOKEN"
+      ],
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/tsconfig.base.json"
+      ],
+      "outputs": []
+    }
+  }
+}
