@@ -95,6 +95,34 @@ importers:
         specifier: 7.0.0-dev.20260523.1
         version: 7.0.0-dev.20260523.1
 
+  apps/x-hot-topic-digest:
+    dependencies:
+      '@vercel/connect':
+        specifier: 0.2.2
+        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+      ai:
+        specifier: 7.0.0-beta.178
+        version: 7.0.0-beta.178(zod@4.3.6)
+      eve:
+        specifier: ^0.15.1
+        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      parallel-web:
+        specifier: ^1.1.0
+        version: 1.1.0
+      resend:
+        specifier: ^6.16.0
+        version: 6.16.0
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: 24.x
+        version: 24.13.2
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260523.1
+        version: 7.0.0-dev.20260523.1
+
 packages:
 
   '@ai-sdk/gateway@4.0.0-beta.109':
@@ -228,6 +256,9 @@ packages:
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
+
+  '@stablelib/base64@1.0.1':
+    resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -544,6 +575,47 @@ packages:
       vue:
         optional: true
 
+  eve@0.15.1:
+    resolution: {integrity: sha512-hqy+4+lOn6K3EZQy4ueibWZc//zZYgEutg6BC2eHcAWEWmqgKs1hBH9Caw2zulEiI9NwCB7XMFyz2bYZM2YpjA==}
+    engines: {node: '>=24'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.0.0
+      '@sveltejs/kit': ^2.0.0
+      ai: 7.0.0-beta.178
+      braintrust: ^3.0.0
+      just-bash: ^3.0.0
+      microsandbox: ^0.5.0
+      next: ^16.0.0
+      nuxt: ^4.0.0
+      react: ^19.0.0
+      svelte: ^5.0.0
+      vite: ^8.0.0
+      vue: ^3.5.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      braintrust:
+        optional: true
+      just-bash:
+        optional: true
+      microsandbox:
+        optional: true
+      next:
+        optional: true
+      nuxt:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vite:
+        optional: true
+      vue:
+        optional: true
+
   eventsource-parser@3.1.0:
     resolution: {integrity: sha512-kJezFj9YFAMLeORyi7aCLxLbD5/qWMQnoMVlVPyHIll7lgRJCc3JVln9Vgl9nwQi0YkMnhdGTMNn7CkRRAptMg==}
     engines: {node: '>=18.0.0'}
@@ -554,6 +626,9 @@ packages:
 
   exsolve@1.0.8:
     resolution: {integrity: sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==}
+
+  fast-sha256@1.3.0:
+    resolution: {integrity: sha512-n11RGP/lrWEFI/bWdygLxhI+pVeo1ZYIVwvvPkW7azl/rOy+F3HYRZ2K5zeE9mmkhQppyv9sQFx0JM9UabnpPQ==}
 
   get-stream@6.0.1:
     resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
@@ -661,6 +736,9 @@ packages:
     resolution: {integrity: sha512-wrAwOeXp1RRMFfQY8Sy7VaGVmPocaLwSFOYCGKSyo8qmJ+/yaafCl5BCA1IQZWqFSRBrKDYFeR9d/VyQzfH/jg==}
     engines: {node: '>= 6.0'}
 
+  parallel-web@1.1.0:
+    resolution: {integrity: sha512-lGbSbuBVBT5OD+5N157HuccucFLC4LHklZfNzqLp6OCgVbQD8dw3ZfzFvNZ3a8e6sdJixmYH65YQbkioo1KfjQ==}
+
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
@@ -705,6 +783,9 @@ packages:
   pgsql-ast-parser@12.0.2:
     resolution: {integrity: sha512-1WWa96Sw6h4uv9GLw98EzH/+xoBTC8j2TwV/AMW3E+Ir/fHOu/jLLbj6kPiz3y2bGISTKNYvKWwHoqvQ5FLuAw==}
 
+  postal-mime@2.7.4:
+    resolution: {integrity: sha512-0WdnFQYUrPGGTFu1uOqD2s7omwua8xaeYGdO6rb88oD5yJ/4pPHDA4sdWqfD8wQVfCny563n/HQS7zTFft+f/g==}
+
   postgres-array@2.0.0:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
     engines: {node: '>=4'}
@@ -727,6 +808,15 @@ packages:
   randexp@0.4.6:
     resolution: {integrity: sha512-80WNmd9DA0tmZrw9qQa62GPPWfuXJknrmVmLcxvq4uZBdYqb1wYoKTmnlGUchvVWe0XiLupYkBoXVOxz3C8DYQ==}
     engines: {node: '>=0.12'}
+
+  resend@6.16.0:
+    resolution: {integrity: sha512-SaKISwHtxvAxneF84Njgnzg+zdngUu1vOT/paRU1De9QF+zXQR3GnwJHSh+mpJPjUhsGD4WxYi5CfKkXMkDqwg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@react-email/render': '*'
+    peerDependenciesMeta:
+      '@react-email/render':
+        optional: true
 
   ret@0.1.15:
     resolution: {integrity: sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==}
@@ -759,6 +849,9 @@ packages:
     resolution: {integrity: sha512-bp07zRuycfTY43IjAvvTFnmnJi8ikW0VFiHwOhhYcVW/L4xQ1XY4PAd4Nuum1rsA17C39zL7x+CDhrn5AL32Rw==}
     engines: {node: '>=20.16.0'}
     hasBin: true
+
+  standardwebhooks@1.0.0:
+    resolution: {integrity: sha512-BbHGOQK9olHPMvQNHWul6MYlrRTAOKn03rOe4A8O3CLWhNf4YHBqq2HJKKC+sfqpxiBY52pNeesD6jIiLDz8jg==}
 
   strip-final-newline@2.0.0:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
@@ -974,6 +1067,8 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
+  '@stablelib/base64@1.0.1': {}
+
   '@standard-schema/spec@1.1.0': {}
 
   '@turbo/darwin-64@2.9.18':
@@ -1066,6 +1161,13 @@ snapshots:
     optionalDependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
       eve: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+
+  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
+    dependencies:
+      '@vercel/oidc': 3.6.1
+    optionalDependencies:
+      ai: 7.0.0-beta.178(zod@4.3.6)
+      eve: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
 
   '@vercel/connect@0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
     dependencies:
@@ -1208,6 +1310,49 @@ snapshots:
       - xml2js
       - zephyr-agent
 
+  eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
+    dependencies:
+      ai: 7.0.0-beta.178(zod@4.3.6)
+      nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@netlify/blobs'
+      - '@netlify/runtime'
+      - '@planetscale/database'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - '@vercel/queue'
+      - aws4fetch
+      - better-sqlite3
+      - chokidar
+      - dotenv
+      - drizzle-orm
+      - giget
+      - idb-keyval
+      - ioredis
+      - jiti
+      - lru-cache
+      - miniflare
+      - mongodb
+      - mysql2
+      - rollup
+      - sqlite3
+      - uploadthing
+      - wrangler
+      - xml2js
+      - zephyr-agent
+
   eventsource-parser@3.1.0: {}
 
   execa@5.1.1:
@@ -1223,6 +1368,8 @@ snapshots:
       strip-final-newline: 2.0.0
 
   exsolve@1.0.8: {}
+
+  fast-sha256@1.3.0: {}
 
   get-stream@6.0.1: {}
 
@@ -1328,6 +1475,8 @@ snapshots:
 
   os-paths@4.4.0: {}
 
+  parallel-web@1.1.0: {}
+
   path-key@3.1.1: {}
 
   pathe@2.0.3: {}
@@ -1372,6 +1521,8 @@ snapshots:
       moo: 0.5.3
       nearley: 2.20.1
 
+  postal-mime@2.7.4: {}
+
   postgres-array@2.0.0: {}
 
   postgres-bytea@1.0.1: {}
@@ -1388,6 +1539,11 @@ snapshots:
     dependencies:
       discontinuous-range: 1.0.0
       ret: 0.1.15
+
+  resend@6.16.0:
+    dependencies:
+      postal-mime: 2.7.4
+      standardwebhooks: 1.0.0
 
   ret@0.1.15: {}
 
@@ -1425,6 +1581,11 @@ snapshots:
   split2@4.2.0: {}
 
   srvx@0.11.16: {}
+
+  standardwebhooks@1.0.0:
+    dependencies:
+      '@stablelib/base64': 1.0.1
+      fast-sha256: 1.3.0
 
   strip-final-newline@2.0.0: {}
 

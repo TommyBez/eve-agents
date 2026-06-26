@@ -8,12 +8,6 @@
         "^build"
       ],
       "env": [
-        "DATA_ANALYST_ALLOWED_SCHEMAS",
-        "DATA_ANALYST_BLOCKED_TABLES",
-        "DATA_ANALYST_DATABASE_URL",
-        "DATA_ANALYST_MAX_ROWS",
-        "DATA_ANALYST_SLACK_CONNECT_UID",
-        "DATA_ANALYST_STATEMENT_TIMEOUT_MS",
         "NODE_ENV",
         "VERCEL",
         "VERCEL_ENV"
@@ -32,12 +26,6 @@
       "cache": false,
       "passThroughEnv": [
         "AI_GATEWAY_API_KEY",
-        "DATA_ANALYST_ALLOWED_SCHEMAS",
-        "DATA_ANALYST_BLOCKED_TABLES",
-        "DATA_ANALYST_DATABASE_URL",
-        "DATA_ANALYST_MAX_ROWS",
-        "DATA_ANALYST_SLACK_CONNECT_UID",
-        "DATA_ANALYST_STATEMENT_TIMEOUT_MS",
         "PORT",
         "VERCEL_OIDC_TOKEN"
       ],
@@ -47,20 +35,11 @@
       "cache": false,
       "passThroughEnv": [
         "AI_GATEWAY_API_KEY",
-        "DATA_ANALYST_ALLOWED_SCHEMAS",
-        "DATA_ANALYST_BLOCKED_TABLES",
-        "DATA_ANALYST_DATABASE_URL",
-        "DATA_ANALYST_MAX_ROWS",
-        "DATA_ANALYST_SLACK_CONNECT_UID",
-        "DATA_ANALYST_STATEMENT_TIMEOUT_MS",
         "VERCEL_OIDC_TOKEN"
       ]
     },
     "info": {
-      "cache": false,
-      "passThroughEnv": [
-        "DATA_ANALYST_SLACK_CONNECT_UID"
-      ]
+      "cache": false
     },
     "start": {
       "dependsOn": [
@@ -69,12 +48,6 @@
       "cache": false,
       "passThroughEnv": [
         "AI_GATEWAY_API_KEY",
-        "DATA_ANALYST_ALLOWED_SCHEMAS",
-        "DATA_ANALYST_BLOCKED_TABLES",
-        "DATA_ANALYST_DATABASE_URL",
-        "DATA_ANALYST_MAX_ROWS",
-        "DATA_ANALYST_SLACK_CONNECT_UID",
-        "DATA_ANALYST_STATEMENT_TIMEOUT_MS",
         "PORT",
         "VERCEL_OIDC_TOKEN"
       ],
