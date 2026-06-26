@@ -27,13 +27,13 @@ importers:
         version: 1.38.0
       '@vercel/connect':
         specifier: 0.2.2
-        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
       ai:
         specifier: 7.0.0-beta.178
         version: 7.0.0-beta.178(zod@4.3.6)
       eve:
         specifier: ^0.13.3
-        version: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+        version: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -49,13 +49,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.7
-        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
       ai:
         specifier: 7.0.0-beta.178
         version: 7.0.0-beta.178(zod@4.3.6)
       eve:
         specifier: ^0.11.10
-        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -71,13 +71,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.7
-        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
       ai:
         specifier: 7.0.0-beta.178
         version: 7.0.0-beta.178(zod@4.3.6)
       eve:
         specifier: ^0.11.10
-        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
       pg:
         specifier: ^8.22.0
         version: 8.22.0
@@ -95,17 +95,42 @@ importers:
         specifier: 7.0.0-dev.20260523.1
         version: 7.0.0-dev.20260523.1
 
-  apps/x-hot-topic-digest:
+  apps/x-draft-assistant:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.2
-        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))
+        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
       ai:
         specifier: 7.0.0-beta.178
         version: 7.0.0-beta.178(zod@4.3.6)
       eve:
         specifier: ^0.15.1
-        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+      parallel-web:
+        specifier: ^1.1.0
+        version: 1.1.0
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: 24.x
+        version: 24.13.2
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260523.1
+        version: 7.0.0-dev.20260523.1
+
+  apps/x-hot-topic-digest:
+    dependencies:
+      '@vercel/connect':
+        specifier: 0.2.2
+        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+      ai:
+        specifier: 7.0.0-beta.178
+        version: 7.0.0-beta.178(zod@4.3.6)
+      eve:
+        specifier: ^0.15.1
+        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
       parallel-web:
         specifier: ^1.1.0
         version: 1.1.0
@@ -122,6 +147,9 @@ importers:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260523.1
         version: 7.0.0-dev.20260523.1
+      microsandbox:
+        specifier: ^0.5.10
+        version: 0.5.10
 
 packages:
 
@@ -262,6 +290,26 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@superradcompany/microsandbox-darwin-arm64@0.5.10':
+    resolution: {integrity: sha512-MGEV2SuLzSg3SiQJy2TXRE9SoWnmIUEhCAQno5y0hJ6dsMe7FbaRDFZtHpKiK4XExAstL5WhT1XF+JJWTEfSqg==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@superradcompany/microsandbox-linux-arm64-gnu@0.5.10':
+    resolution: {integrity: sha512-4FYoAURc1qbNxIbBFK9shMQ9MxklgPRGEsY7tQog8beqvc3U91W34aZyOu90OTRJm0TNsdoLIg3lxKP4LKIJYQ==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@superradcompany/microsandbox-linux-x64-gnu@0.5.10':
+    resolution: {integrity: sha512-M9FjBAQ36dxhfs5S62uVxCTNAZzxjUgprNh41dIG6H6eF+tAEHYMY1lUEf/w1rkQw8SUsVRrtS+wfVyIM4z9fA==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
 
   '@turbo/darwin-64@2.9.18':
     resolution: {integrity: sha512-9f27peFu16ur8c0v9nUFUEyBnbKuuFsUTjHFWfmwGfzySBXbHwzU44QhZon6Mznz0cHsIr3984NQj/bVrnGSRw==}
@@ -670,6 +718,11 @@ packages:
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
 
+  microsandbox@0.5.10:
+    resolution: {integrity: sha512-0NVFu8DohPq/hrG76CJ5x2x8wckNQq8KSN/VXxyVLns8WfDyBzfSSYXHUSV2evjdRB3dkA9FUJjnGujb2XRD1Q==}
+    engines: {node: '>= 22'}
+    hasBin: true
+
   mimic-fn@2.1.0:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
@@ -1071,6 +1124,15 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
+  '@superradcompany/microsandbox-darwin-arm64@0.5.10':
+    optional: true
+
+  '@superradcompany/microsandbox-linux-arm64-gnu@0.5.10':
+    optional: true
+
+  '@superradcompany/microsandbox-linux-x64-gnu@0.5.10':
+    optional: true
+
   '@turbo/darwin-64@2.9.18':
     optional: true
 
@@ -1155,26 +1217,26 @@ snapshots:
     dependencies:
       execa: 5.1.1
 
-  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
+  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
     dependencies:
       '@vercel/oidc': 3.6.1
     optionalDependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      eve: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
 
-  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
+  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
     dependencies:
       '@vercel/oidc': 3.6.1
     optionalDependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      eve: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
 
-  '@vercel/connect@0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)))':
+  '@vercel/connect@0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
     dependencies:
       '@vercel/oidc': 3.7.0
     optionalDependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))
+      eve: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
 
   '@vercel/oidc@3.2.0': {}
 
@@ -1224,10 +1286,12 @@ snapshots:
       httpxy: 0.5.3
       srvx: 0.11.16
 
-  eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
+  eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
     dependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
       nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
+    optionalDependencies:
+      microsandbox: 0.5.10
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1267,10 +1331,12 @@ snapshots:
       - xml2js
       - zephyr-agent
 
-  eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
+  eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
     dependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
       nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
+    optionalDependencies:
+      microsandbox: 0.5.10
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1310,10 +1376,12 @@ snapshots:
       - xml2js
       - zephyr-agent
 
-  eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6)):
+  eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
     dependencies:
       ai: 7.0.0-beta.178(zod@4.3.6)
       nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
+    optionalDependencies:
+      microsandbox: 0.5.10
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1395,6 +1463,12 @@ snapshots:
   json-schema@0.4.0: {}
 
   merge-stream@2.0.0: {}
+
+  microsandbox@0.5.10:
+    optionalDependencies:
+      '@superradcompany/microsandbox-darwin-arm64': 0.5.10
+      '@superradcompany/microsandbox-linux-arm64-gnu': 0.5.10
+      '@superradcompany/microsandbox-linux-x64-gnu': 0.5.10
 
   mimic-fn@2.1.0: {}
 

@@ -1,5 +1,5 @@
 {
-  "name": "x-hot-topic-digest",
+  "name": "x-draft-assistant",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -20,13 +20,11 @@
     "ai": "7.0.0-beta.178",
     "eve": "^0.15.1",
     "parallel-web": "^1.1.0",
-    "resend": "^6.16.0",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/node": "24.x",
-    "@typescript/native-preview": "7.0.0-dev.20260523.1",
-    "microsandbox": "^0.5.10"
+    "@typescript/native-preview": "7.0.0-dev.20260523.1"
   },
   "engines": {
     "node": "24.x"
