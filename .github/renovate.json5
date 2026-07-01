@@ -1,0 +1,34 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+
+  // pnpm catalogs (pnpm-workspace.yaml `catalog:`) are supported natively by current
+  // Renovate — no extra manager config needed; catalog bumps land in pnpm-workspace.yaml.
+
+  // Catalog entries are mostly exact pins; "replace" updates the pin (and widens a range
+  // only when the new version falls outside it) instead of rewriting range styles.
+  rangeStrategy: "replace",
+
+  labels: ["dependencies"],
+  // Keep plain commit messages ("Update …"), not "chore(deps): …".
+  semanticCommits: "disabled",
+
+  packageRules: [
+    // The eve stack moves fast (pre-1.0) and must move together: one weekly PR,
+    // gated by CI's deterministic evals (and the nightly live evals after merge).
+    {
+      groupName: "eve stack",
+      matchPackageNames: ["eve", "ai", "nitro", "@ai-sdk/**", "@vercel/**", "@workflow/**"],
+      schedule: ["before 8am on monday"],
+      labels: ["dependencies", "eve-stack"],
+    },
+
+    // Everything else: low-churn monthly batch of minor + patch updates.
+    {
+      groupName: "minor and patch",
+      matchPackageNames: ["!eve", "!ai", "!nitro", "!@ai-sdk/**", "!@vercel/**", "!@workflow/**"],
+      matchUpdateTypes: ["minor", "patch"],
+      schedule: ["before 8am on the first day of the month"],
+    },
+  ],
+}

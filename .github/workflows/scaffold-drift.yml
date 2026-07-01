@@ -1,0 +1,104 @@
+# Weekly scaffold-drift guard (PLAN §4.3): runs `eve init` into a temp dir with the workspace's
+# eve version and diffs the shape-defining files against our generator templates.
+#
+# scripts/check-scaffold-drift.mjs contract:
+#   exit 0 — templates match upstream scaffold (job green)
+#   exit 1 — drift detected (job stays green; a tracking issue is created/updated with the report)
+#   exit 2 — the check itself errored (job fails loudly)
+#
+# No secrets required. Optional: TURBO_TOKEN/TURBO_TEAM for remote cache (unused here, omitted).
+name: Scaffold drift
+
+on:
+  schedule:
+    - cron: "23 5 * * 1" # weekly, Monday 05:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check scaffold drift
+        id: drift
+        run: |
+          set +e
+          node scripts/check-scaffold-drift.mjs | tee drift-report.txt
+          code=${PIPESTATUS[0]}
+          set -e
+          echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 2 ]; then
+            echo "::error::check-scaffold-drift.mjs errored (exit 2) — see log above"
+            exit 2
+          elif [ "$code" -eq 1 ]; then
+            echo "::warning::eve scaffold drift detected — a tracking issue will be created/updated"
+          elif [ "$code" -ne 0 ]; then
+            echo "::error::check-scaffold-drift.mjs exited with unexpected code $code"
+            exit "$code"
+          fi
+
+      - name: Open or update drift issue
+        if: steps.drift.outputs.exit-code == '1'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const title = "eve scaffold drift detected";
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            let report = "";
+            try {
+              report = fs.readFileSync("drift-report.txt", "utf8");
+            } catch {
+              report = "(no report output captured)";
+            }
+            // Keep the issue body under GitHub's limit.
+            if (report.length > 60000) report = report.slice(0, 60000) + "\n… (truncated)";
+            const body = [
+              `\`scripts/check-scaffold-drift.mjs\` found drift between \`turbo/generators/templates/agent/\` and the current \`eve init\` scaffold.`,
+              "",
+              `Run: ${runUrl}`,
+              "",
+              "```",
+              report.trim(),
+              "```",
+            ].join("\n");
+
+            // Dedupe by title among open issues.
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = issues.find((i) => i.title === title && !i.pull_request);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ["scaffold-drift", "automated"],
+              });
+            }
