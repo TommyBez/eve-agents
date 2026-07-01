@@ -21,6 +21,7 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@turbo/gen": "^2.10.2",
+    "knip": "^6.23.0",
     "turbo": "^2.10.2"
   },
   "engines": {
