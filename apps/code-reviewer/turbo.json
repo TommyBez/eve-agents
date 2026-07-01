@@ -2,90 +2,14 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "env": ["GITHUB_APP_SLUG", "NODE_ENV", "VERCEL", "VERCEL_ENV"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*", "$TURBO_ROOT$/tsconfig.base.json"],
-      "outputs": [".eve/**", ".output/**"]
-    },
-    "dev": {
-      "cache": false,
-      "passThroughEnv": [
-        "AI_GATEWAY_API_KEY",
-        "CODE_REVIEWER_COOLDOWN_REPLY",
-        "CODE_REVIEWER_COOLDOWN_REPLY_SECONDS",
-        "CODE_REVIEWER_PRIVATE_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_PR_COOLDOWN_SECONDS",
-        "CODE_REVIEWER_PUBLIC_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_RATE_LIMIT_ENABLED",
-        "CODE_REVIEWER_RATE_LIMIT_FAILURE_MODE",
-        "CODE_REVIEWER_RATE_LIMIT_PREFIX",
-        "CODE_REVIEWER_USER_PR_COOLDOWN_SECONDS",
+      "env": [
+        "CODE_REVIEWER_*",
         "GITHUB_APP_ID",
         "GITHUB_APP_PRIVATE_KEY",
         "GITHUB_APP_SLUG",
         "GITHUB_WEBHOOK_SECRET",
-        "KV_REST_API_TOKEN",
-        "KV_REST_API_URL",
-        "PORT",
-        "VERCEL_OIDC_TOKEN"
-      ],
-      "persistent": true
-    },
-    "eval": {
-      "cache": false,
-      "passThroughEnv": [
-        "AI_GATEWAY_API_KEY",
-        "CODE_REVIEWER_COOLDOWN_REPLY",
-        "CODE_REVIEWER_COOLDOWN_REPLY_SECONDS",
-        "CODE_REVIEWER_PRIVATE_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_PR_COOLDOWN_SECONDS",
-        "CODE_REVIEWER_PUBLIC_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_RATE_LIMIT_ENABLED",
-        "CODE_REVIEWER_RATE_LIMIT_FAILURE_MODE",
-        "CODE_REVIEWER_RATE_LIMIT_PREFIX",
-        "CODE_REVIEWER_USER_PR_COOLDOWN_SECONDS",
-        "GITHUB_APP_ID",
-        "GITHUB_APP_PRIVATE_KEY",
-        "GITHUB_APP_SLUG",
-        "GITHUB_WEBHOOK_SECRET",
-        "KV_REST_API_TOKEN",
-        "KV_REST_API_URL",
-        "VERCEL_OIDC_TOKEN"
+        "KV_REST_API_*"
       ]
-    },
-    "info": {
-      "cache": false,
-      "passThroughEnv": ["GITHUB_APP_SLUG"]
-    },
-    "start": {
-      "dependsOn": ["build"],
-      "cache": false,
-      "passThroughEnv": [
-        "AI_GATEWAY_API_KEY",
-        "CODE_REVIEWER_COOLDOWN_REPLY",
-        "CODE_REVIEWER_COOLDOWN_REPLY_SECONDS",
-        "CODE_REVIEWER_PRIVATE_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_PR_COOLDOWN_SECONDS",
-        "CODE_REVIEWER_PUBLIC_REPO_DAILY_LIMIT",
-        "CODE_REVIEWER_RATE_LIMIT_ENABLED",
-        "CODE_REVIEWER_RATE_LIMIT_FAILURE_MODE",
-        "CODE_REVIEWER_RATE_LIMIT_PREFIX",
-        "CODE_REVIEWER_USER_PR_COOLDOWN_SECONDS",
-        "GITHUB_APP_ID",
-        "GITHUB_APP_PRIVATE_KEY",
-        "GITHUB_APP_SLUG",
-        "GITHUB_WEBHOOK_SECRET",
-        "KV_REST_API_TOKEN",
-        "KV_REST_API_URL",
-        "PORT",
-        "VERCEL_OIDC_TOKEN"
-      ],
-      "persistent": true
-    },
-    "typecheck": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"],
-      "outputs": []
     }
   }
 }

@@ -100,7 +100,9 @@ export async function checkCodeReviewRateLimit(
       ),
       await checkLimiter(limiters.pr, identifierForPr(input), "pr_cooldown"),
       await checkLimiter(
-        input.isPrivateRepository ? limiters.privateRepoDaily : limiters.publicRepoDaily,
+        input.isPrivateRepository
+          ? limiters.privateRepoDaily
+          : limiters.publicRepoDaily,
         identifierForRepoDaily(input),
         "repo_daily_limit",
       ),
@@ -185,7 +187,12 @@ function checkLimiter(
   });
 }
 
-function createRateLimiter(redis: Redis, limit: number, windowSeconds: number, prefix: string) {
+function createRateLimiter(
+  redis: Redis,
+  limit: number,
+  windowSeconds: number,
+  prefix: string,
+) {
   return new Ratelimit({
     analytics: false,
     limiter: Ratelimit.slidingWindow(limit, `${windowSeconds} s`),
@@ -205,7 +212,12 @@ function createRateLimiterBundle(config: RateLimitConfig) {
       config.cooldownReplySeconds,
       `${config.prefix}:cooldown-reply`,
     ),
-    pr: createRateLimiter(redis, 1, config.prCooldownSeconds, `${config.prefix}:pr`),
+    pr: createRateLimiter(
+      redis,
+      1,
+      config.prCooldownSeconds,
+      `${config.prefix}:pr`,
+    ),
     privateRepoDaily: createRateLimiter(
       redis,
       Math.max(1, config.privateRepoDailyLimit),

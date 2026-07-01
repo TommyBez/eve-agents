@@ -2,12 +2,30 @@ packages:
   - "apps/*"
   - "packages/*"
 
+# Single source of truth for dependency versions shared across the workspace.
+# Apps declare `"eve": "catalog:"` etc. — never a version number directly.
+catalog:
+  "@biomejs/biome": 2.5.2
+  "@types/node": 24.x
+  "@vercel/connect": 0.2.7
+  ai: ^7.0.10
+  eve: ^0.18.0
+  typescript: 7.0.1-rc
+  vitest: ^4.1.9
+  zod: 4.4.3
+
+# Matches the exclusions the eve 0.18 scaffold generates.
 minimumReleaseAgeExclude:
+  - "@ai-sdk/*"
+  - "@rolldown/*"
+  - "@vercel/*"
+  - "@workflow/*"
+  - ai
+  - experimental-ai-sdk-code-mode
   - eve
+  - nitro
+  - rolldown
+  - workflow
+
 allowBuilds:
   sharp: false
-# Compatibility for eve releases with an incomplete runtime manifest.
-packageExtensions:
-  "eve@>=0.6.0-beta.13 <=0.7.0":
-    dependencies:
-      oxc-parser: 0.134.0

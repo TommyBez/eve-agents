@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { fileURLToPath } from "node:url";
@@ -33,8 +39,7 @@ async function main() {
 
   try {
     const rawName =
-      args.name ??
-      (await rl.question("Agent name (e.g. customer-support): "));
+      args.name ?? (await rl.question("Agent name (e.g. customer-support): "));
     const agentName = toPackageName(rawName);
 
     if (!agentName) {
@@ -61,11 +66,21 @@ async function main() {
     }
 
     mkdirSync(targetDir, { recursive: true });
-    writeJson(path.join(targetDir, "package.json"), createPackageJson(agentName));
+    writeJson(
+      path.join(targetDir, "package.json"),
+      createPackageJson(agentName),
+    );
 
     const provider = findEveProviderPackage();
     if (provider) {
-      run("pnpm", ["--filter", provider.name, "exec", "eve", "init", targetDir]);
+      run("pnpm", [
+        "--filter",
+        provider.name,
+        "exec",
+        "eve",
+        "init",
+        targetDir,
+      ]);
     } else {
       const eveVersion = DEFAULT_DEPENDENCIES.eve.replace(/^[~^]/, "");
       run("pnpm", ["dlx", `eve@${eveVersion}`, "init", targetDir]);
@@ -74,13 +89,16 @@ async function main() {
     normalizeAgentPackage(targetDir, agentName);
     ensureMonorepoFiles(targetDir);
 
-    const shouldInstall = args.install ?? (args.yes || (await confirm(rl, "Run pnpm install?", true)));
+    const shouldInstall =
+      args.install ??
+      (args.yes || (await confirm(rl, "Run pnpm install?", true)));
     if (shouldInstall) {
       run("pnpm", ["install"]);
     }
 
     const shouldVerify =
-      args.verify ?? (args.yes || (await confirm(rl, `Run eve info for ${agentName}?`, true)));
+      args.verify ??
+      (args.yes || (await confirm(rl, `Run eve info for ${agentName}?`, true)));
     if (shouldVerify) {
       run("pnpm", ["--filter", agentName, "run", "info"]);
     }
@@ -256,7 +274,10 @@ function findEveProviderPackage() {
 
       const pkg = readJson(packagePath);
       if (pkg.dependencies?.eve || pkg.devDependencies?.eve) {
-        return { name: pkg.name, version: pkg.dependencies?.eve ?? pkg.devDependencies?.eve };
+        return {
+          name: pkg.name,
+          version: pkg.dependencies?.eve ?? pkg.devDependencies?.eve,
+        };
       }
     }
   }
@@ -277,7 +298,9 @@ function toPackageName(value) {
 
 async function confirm(rl, question, defaultValue) {
   const suffix = defaultValue ? "Y/n" : "y/N";
-  const answer = (await rl.question(`${question} [${suffix}] `)).trim().toLowerCase();
+  const answer = (await rl.question(`${question} [${suffix}] `))
+    .trim()
+    .toLowerCase();
 
   if (!answer) {
     return defaultValue;
@@ -306,7 +329,9 @@ function run(command, args) {
   }
 
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status}`);
+    throw new Error(
+      `${command} ${args.join(" ")} failed with exit code ${result.status}`,
+    );
   }
 }
 

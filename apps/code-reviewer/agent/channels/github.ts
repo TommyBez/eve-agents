@@ -1,11 +1,11 @@
 import {
   defaultGitHubAuth,
-  type GitHubJsonObject,
-  githubChannel,
   type GitHubChannelState,
   type GitHubEventContext,
   type GitHubInboundContext,
+  type GitHubJsonObject,
   type GitHubThread,
+  githubChannel,
 } from "eve/channels/github";
 import { toolResultFrom } from "eve/tools";
 import {
@@ -154,7 +154,9 @@ async function maybePostCooldownReply(
   }
 }
 
-function formatCooldownReply(decision: Extract<RateLimitDecision, { allowed: false }>) {
+function formatCooldownReply(
+  decision: Extract<RateLimitDecision, { allowed: false }>,
+) {
   if (decision.reason === "rate_limit_unavailable") {
     return `\`${BOT_NAME}\` cannot run because rate limiting is unavailable for this repository.`;
   }
@@ -246,7 +248,9 @@ async function publishFallbackReview(
   );
 }
 
-function toGitHubReviewComment(comment: SubmitPrReviewComment): GitHubJsonObject {
+function toGitHubReviewComment(
+  comment: SubmitPrReviewComment,
+): GitHubJsonObject {
   return {
     body: formatInlineCommentBody(comment),
     line: comment.line,
@@ -312,7 +316,9 @@ function splitCommentBody(message: string) {
     startIndex < message.length;
     startIndex += GITHUB_COMMENT_CHUNK_SIZE
   ) {
-    chunks.push(message.slice(startIndex, startIndex + GITHUB_COMMENT_CHUNK_SIZE));
+    chunks.push(
+      message.slice(startIndex, startIndex + GITHUB_COMMENT_CHUNK_SIZE),
+    );
   }
 
   return chunks;
