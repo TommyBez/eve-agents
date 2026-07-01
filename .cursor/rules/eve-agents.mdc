@@ -1,0 +1,18 @@
+---
+description: Repo-wide rules for the eve-agents monorepo. Defers to AGENTS.md.
+alwaysApply: true
+---
+
+# eve-agents rules
+
+The canonical instructions live in [AGENTS.md](../../AGENTS.md) at the repo root — read it first and follow it. Longer playbooks are in `docs/` (adding-an-agent, testing, deployment, conventions, troubleshooting).
+
+Hard rules (summary; AGENTS.md is authoritative):
+
+1. Dependency versions live only in the `catalog:` section of `pnpm-workspace.yaml` — never write a version number in an app's `package.json`.
+2. Never import across `apps/*`. Shared code goes to `packages/*` (`@repo/*`, `workspace:*`) once a second consumer exists.
+3. App-specific env vars are prefixed with the SCREAMING_SNAKE app name (e.g. `CODE_REVIEWER_*`); keep `.env.example` current.
+4. Create new agents only via `pnpm agent:new` — never hand-copy an app or run `eve init` here.
+5. Run `pnpm verify` (lint + typecheck + build + test + eval:ci) before finishing any task; it must pass with no env vars or secrets.
+6. Evals tagged `ci` (in `evals/deterministic/`) must stay deterministic and secret-free; real-model checks go in `evals/live/` with tag `live`.
+7. Before writing eve code, read the matching guide in `apps/<app>/node_modules/eve/docs/` — use `.agents/skills/eve/SKILL.md` as the index. Re-validate that index after eve version bumps.
