@@ -1,0 +1,17 @@
+import { defineEval } from "eve/evals";
+import { includes } from "eve/evals/expect";
+
+// Runs against the deterministic fixture model (see agent/agent.ts):
+//   pnpm run eval:ci   →   EVE_MOCK_MODEL=1 eve eval --tag ci --strict
+// No API keys required; the run still exercises the real eve runtime.
+export default defineEval({
+  description:
+    "Smoke: the agent boots, accepts a message, and replies deterministically.",
+  tags: ["ci"],
+  async test(t) {
+    await t.send("ping");
+    t.succeeded();
+    // The mock model echoes the user message behind a fixed prefix.
+    t.check(t.reply, includes("MOCK_REPLY: ping"));
+  },
+});

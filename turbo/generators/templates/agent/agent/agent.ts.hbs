@@ -1,0 +1,23 @@
+import { defineAgent } from "eve";
+import { mockModel } from "eve/evals";
+
+// ── Mock-model switch for deterministic evals ────────────────────────────────
+// `pnpm run eval:ci` sets EVE_MOCK_MODEL, which swaps the live model for a
+// deterministic fixture. The eval run still exercises the real eve runtime
+// (boot, channel routing, tool wiring, session protocol) but never calls a
+// model provider — so it needs no API keys and is safe to run on every PR.
+// Everything else (`eve dev`, `eve start`, live evals) uses the real model.
+const model = process.env.EVE_MOCK_MODEL
+  ? mockModel(({ lastUserMessage }) => `MOCK_REPLY: ${lastUserMessage}`)
+  : "anthropic/claude-sonnet-5";
+
+export default defineAgent({
+  model,
+  // The mock model is not in the AI Gateway catalog, so tell eve its context
+  // window size explicitly while the fixture is active (compaction needs it).
+  ...(process.env.EVE_MOCK_MODEL ? { modelContextWindowTokens: 200_000 } : {}),
+  limits: {
+    // Cost guardrail: cap provider-reported input tokens per session.
+    maxInputTokensPerSession: 10_000_000,
+  },
+});

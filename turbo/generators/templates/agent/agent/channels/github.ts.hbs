@@ -1,0 +1,10 @@
+import { githubChannel } from "eve/channels/github";
+
+// Handles GitHub App webhooks at /eve/v1/github: @{{name}} mentions on issues,
+// PRs, and review comments dispatch a turn with the PR diff in context.
+// Credentials resolve from env vars — GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY,
+// GITHUB_WEBHOOK_SECRET (and GITHUB_APP_SLUG as the botName fallback).
+// See node_modules/eve/docs/channels/github.mdx for the GitHub App setup.
+export default githubChannel({
+  botName: "{{name}}",
+});

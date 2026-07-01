@@ -1,0 +1,14 @@
+import { defineSchedule } from "eve/schedules";
+
+// Cron expressions are evaluated in UTC on Vercel. `eve dev` never fires
+// schedules on their cadence — trigger this one manually while iterating:
+//
+//   curl -X POST http://localhost:3000/eve/v1/dev/schedules/example
+//
+// or from an eval via `t.target.dispatchSchedule("example")`.
+// See node_modules/eve/docs/schedules.mdx for the handler (`run`) form.
+export default defineSchedule({
+  cron: "0 9 * * 1-5",
+  markdown:
+    "Write a short status heartbeat: confirm the agent is healthy and note the current date.",
+});

@@ -1,0 +1,34 @@
+# {{name}} — app instructions
+
+{{{description}}}
+
+Primary surface: `{{surface}}`. Built with the eve framework — read the
+relevant guide in `node_modules/eve/docs/` before changing eve code.
+
+## Environment variables
+
+- App-specific vars are prefixed `{{constantCase name}}_` and typed in `agent/lib/env.ts`.
+  Add new ones there and to `.env.example`; caching picks them up via the
+  `{{constantCase name}}_*` wildcard in `turbo.json`.
+- `AI_GATEWAY_API_KEY` is required for live model calls only. Deterministic
+  evals (`eval:ci`) and unit tests run with zero env vars.
+
+## Run and verify just this app
+
+```bash
+pnpm --filter {{name}} run dev        # local TUI / REPL
+pnpm --filter {{name}} run lint       # biome
+pnpm --filter {{name}} run typecheck
+pnpm --filter {{name}} run build      # eve build
+pnpm --filter {{name}} run test       # vitest (tests/)
+pnpm --filter {{name}} run eval:ci    # deterministic evals, tag "ci", mock model
+pnpm --filter {{name}} run eval       # all evals, live model
+```
+
+## Rules
+
+- Dependency versions come from the pnpm catalog (`"catalog:"`) — never write
+  a version number in `package.json`.
+- Never import from a sibling app under `apps/*`.
+- Keep deterministic evals key-free: anything tagged `ci` must pass with no
+  env vars set.
