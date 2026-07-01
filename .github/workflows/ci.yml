@@ -5,9 +5,12 @@
 #   - secret  TURBO_TOKEN — Vercel access token
 #   - variable TURBO_TEAM — Vercel team slug
 #
-# Note: `turbo boundaries` is intentionally NOT run here — it currently flags eve-generated
+# Note: `turbo boundaries` is intentionally NOT run here — it flags eve-generated
 # `.eve/nitro` build output (which imports from node_modules/.pnpm via relative paths) as a
-# cross-package violation whenever build artifacts exist, so it can't gate CI reliably yet.
+# cross-package violation whenever build artifacts exist, and offers no way to exclude
+# generated files. Upstream: https://github.com/vercel/turborepo/discussions/9435
+# (TODO(maintainer): swap in the filed issue URL). Until fixed, the "Cross-app import
+# check" step below enforces app isolation via scripts/check-cross-app-imports.mjs.
 name: CI
 
 on:
@@ -47,6 +50,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # Stand-in for `turbo boundaries` (see header note): apps must not import other apps.
+      - name: Cross-app import check
+        run: node scripts/check-cross-app-imports.mjs
 
       # PRs: only packages affected vs. the base branch (turbo auto-detects GITHUB_BASE_REF).
       - name: Verify (affected)

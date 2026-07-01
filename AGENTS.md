@@ -31,7 +31,7 @@ Use `.agents/skills/eve/SKILL.md` as the routed index: it maps each topic to the
 ## Hard rules
 
 1. **Versions live only in the `catalog:` section of `pnpm-workspace.yaml`.** App `package.json` files declare `"eve": "catalog:"` etc. Never write a version number in an app's `package.json`.
-2. **Never import across `apps/*`.** An app imports its own code (`#*` maps to `./agent/*`) and workspace packages (`@repo/*`). Shared code goes to `packages/*` once a second consumer exists — see `docs/conventions.md`.
+2. **Never import across `apps/*`.** An app imports its own code (`#*` maps to `./agent/*`) and workspace packages (`@repo/*`). Shared code goes to `packages/*` once a second consumer exists — see `docs/conventions.md`. Enforced by `scripts/check-cross-app-imports.mjs` (runs in `pnpm verify` and CI).
 3. **App-specific env vars are prefixed with the SCREAMING_SNAKE app name** (`CODE_REVIEWER_*` for `code-reviewer`). Shared platform vars (`AI_GATEWAY_API_KEY`, `GITHUB_APP_*`, `SLACK_*`, ...) keep their canonical names. Every var an app reads is listed in its `.env.example`.
 4. **New agents are created only via `pnpm agent:new`.** Never hand-copy an existing app or run `eve init` inside this repo.
 5. **Run `pnpm verify` before finishing any task.** If you touched only one app, `pnpm turbo run lint typecheck build test eval:ci --filter <app>` is an acceptable fast path, but the full `pnpm verify` is the definition of done.

@@ -16,7 +16,7 @@
     "start": "turbo run start",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "verify": "turbo run lint typecheck build test eval:ci"
+    "verify": "node scripts/check-cross-app-imports.mjs && turbo run lint typecheck build test eval:ci"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
