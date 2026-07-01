@@ -22,7 +22,7 @@ diff --git a/src/copy.ts b/src/copy.ts
 Review this diff and publish the PR review with submit_pr_review.
 `);
 
-    t.completed();
+    t.succeeded();
     t.calledTool("submit_pr_review");
     t.check(t.reply, includes("No actionable").soft());
   },

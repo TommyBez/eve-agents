@@ -17,10 +17,10 @@
     "turbo": "^2.9.18"
   },
   "overrides": {
-    "ai": "7.0.0-beta.178"
+    "ai": "7.0.10"
   },
   "resolutions": {
-    "ai": "7.0.0-beta.178"
+    "ai": "7.0.10"
   },
   "engines": {
     "node": "24.x"

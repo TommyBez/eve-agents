@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  ai: 7.0.0-beta.178
+  ai: 7.0.10
 
 packageExtensionsChecksum: sha256-BFhBLA/f31bB0k2tXO+iMR5SW/1jSh3kajFaFo0OpeI=
 
@@ -27,13 +27,13 @@ importers:
         version: 1.38.0
       '@vercel/connect':
         specifier: 0.2.2
-        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+        version: 0.2.2(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.3.6)
+        specifier: 7.0.10
+        version: 7.0.10(zod@4.3.6)
       eve:
-        specifier: ^0.13.3
-        version: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+        specifier: ^0.18.0
+        version: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -49,13 +49,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.7
-        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+        version: 0.2.7(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.3.6)
+        specifier: 7.0.10
+        version: 7.0.10(zod@4.3.6)
       eve:
-        specifier: ^0.11.10
-        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+        specifier: ^0.18.0
+        version: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -71,13 +71,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.7
-        version: 0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+        version: 0.2.7(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.3.6)
+        specifier: 7.0.10
+        version: 7.0.10(zod@4.3.6)
       eve:
-        specifier: ^0.11.10
-        version: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+        specifier: ^0.18.0
+        version: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
       pg:
         specifier: ^8.22.0
         version: 8.22.0
@@ -99,13 +99,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.2
-        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+        version: 0.2.2(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.3.6)
+        specifier: 7.0.10
+        version: 7.0.10(zod@4.3.6)
       eve:
-        specifier: ^0.15.1
-        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+        specifier: ^0.18.0
+        version: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
       parallel-web:
         specifier: ^1.1.0
         version: 1.1.0
@@ -124,13 +124,13 @@ importers:
     dependencies:
       '@vercel/connect':
         specifier: 0.2.2
-        version: 0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))
+        version: 0.2.2(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.3.6)
+        specifier: 7.0.10
+        version: 7.0.10(zod@4.3.6)
       eve:
-        specifier: ^0.15.1
-        version: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+        specifier: ^0.18.0
+        version: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
       parallel-web:
         specifier: ^1.1.0
         version: 1.1.0
@@ -153,20 +153,20 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.0-beta.109':
-    resolution: {integrity: sha512-W/1kLlPb6Bgbhwep3CA3R6do0HD7SXV5gyuz2XBLY1YABqgxYkw+IhEcjOYlmn9v+Tifjqy5yJqmWdSHMJhyPQ==}
+  '@ai-sdk/gateway@4.0.8':
+    resolution: {integrity: sha512-esHzojMp+LllqOnEu6sYa6NKOmPcE5UObPV61LE6L2QAzCH6WHMgTS+Q/HF5HU3lVUWsHtkDzN7TNqMfv/ecCg==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@5.0.0-beta.49':
-    resolution: {integrity: sha512-7xnpAQLpW0KGIsh0CQERcIZuXEGqv7FtFW2BdFk14iuMxRMVpXhTVvEQyqkm6tWAbQ7OsGQJhO6M0Me9gHQ52g==}
+  '@ai-sdk/provider-utils@5.0.3':
+    resolution: {integrity: sha512-El0JOXXGcHFe6+owJ1UV0VgB9XtdivP8vcZni+rUIt6lt+cBHCnUdddaA6LE2avJGJ5AD0uXSY+uAvRL2tSvgw==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider@4.0.0-beta.19':
-    resolution: {integrity: sha512-Aca/KiGeRtMM7rOJ38Qio+Dc2V45PpiGoWgdrdtIkgM9zkhYpS043t0ggKoNOWgm/csv99XWGrfSF63PSkVeHw==}
+  '@ai-sdk/provider@4.0.1':
+    resolution: {integrity: sha512-6p3C/vGqVIjcptBu1DnVd/BZJ2wWmV9TUv9192vT6ZvT9KNED8EwRTqyqFpoQZKgSbMDSvBSq3dqR524Nt/Crw==}
     engines: {node: '>=22'}
 
   '@emnapi/core@1.11.1':
@@ -422,7 +422,7 @@ packages:
     peerDependencies:
       '@ai-sdk/mcp': ^1 || ^2
       '@auth/core': '>=0.37.0'
-      ai: 7.0.0-beta.178
+      ai: 7.0.10
       better-auth: '>=1.5.0'
       eve: '>=0.6.0-beta.1'
     peerDependenciesMeta:
@@ -442,7 +442,7 @@ packages:
     peerDependencies:
       '@ai-sdk/mcp': ^1 || ^2
       '@auth/core': '>=0.37.0'
-      ai: 7.0.0-beta.178
+      ai: 7.0.10
       better-auth: '>=1.5.0'
       eve: '>=0.6.0-beta.1'
     peerDependenciesMeta:
@@ -472,8 +472,8 @@ packages:
   '@workflow/serde@4.1.0':
     resolution: {integrity: sha512-pav4F2BoirECWR7Nf1TKt+2eETcBj7jj4cBefQ8VXQCA6NPkaKeLfj/zMgi+3zYV5ZIBT4GuUiphsj0/b9hPQQ==}
 
-  ai@7.0.0-beta.178:
-    resolution: {integrity: sha512-kOfIbf23FDkvvfDHOS1gIjImBF9MlYut8fEMlps57vvS622VKL1PeEDLJ181aVd2LPSiDr3SupAMSzI2rEaW3w==}
+  ai@7.0.10:
+    resolution: {integrity: sha512-qfrNXGNlSBZJgB4rM1AkcMUnM776+SEgp4jUToQWPX+nOOdk04Bzbta+G84NEDmxs87ojkqTn+MWVfeXvPg4Dg==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -541,127 +541,24 @@ packages:
       wrangler:
         optional: true
 
-  eve@0.11.10:
-    resolution: {integrity: sha512-vMjqknf+8pSL4kpm8uQI6N1r7KcLDqJuouN6updVqELlfWU7ndVNJ5rxBagM8C202owuh5JtCVnnxyHEz7EPFA==}
+  eve@0.18.0:
+    resolution: {integrity: sha512-vEYiZe5D3m1s0UvuS5oSsNaJ10PD3oXzmwY1dLxlRncPjHZNGlmb84fG//KOU/HI6AsQuL3/gvgxUuS48jCRnw==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
-      '@sveltejs/kit': ^2.0.0
-      ai: 7.0.0-beta.178
+      ai: 7.0.10
       braintrust: ^3.0.0
       just-bash: ^3.0.0
       microsandbox: ^0.5.0
-      next: ^16.0.0
-      nuxt: ^4.0.0
-      react: ^19.0.0
-      svelte: ^5.0.0
-      vite: ^8.0.0
-      vue: ^3.5.0
     peerDependenciesMeta:
       '@opentelemetry/api':
-        optional: true
-      '@sveltejs/kit':
         optional: true
       braintrust:
         optional: true
       just-bash:
         optional: true
       microsandbox:
-        optional: true
-      next:
-        optional: true
-      nuxt:
-        optional: true
-      react:
-        optional: true
-      svelte:
-        optional: true
-      vite:
-        optional: true
-      vue:
-        optional: true
-
-  eve@0.13.3:
-    resolution: {integrity: sha512-UeDjzBq+j6XhECSW5FJjz8Lin4yw75rOchxbI/rmeRj9c9ldERwH/tb+aQRRzh3ZhnkFITzsBpNyF2arYcEjXQ==}
-    engines: {node: '>=24'}
-    hasBin: true
-    peerDependencies:
-      '@opentelemetry/api': ^1.0.0
-      '@sveltejs/kit': ^2.0.0
-      ai: 7.0.0-beta.178
-      braintrust: ^3.0.0
-      just-bash: ^3.0.0
-      microsandbox: ^0.5.0
-      next: ^16.0.0
-      nuxt: ^4.0.0
-      react: ^19.0.0
-      svelte: ^5.0.0
-      vite: ^8.0.0
-      vue: ^3.5.0
-    peerDependenciesMeta:
-      '@opentelemetry/api':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      braintrust:
-        optional: true
-      just-bash:
-        optional: true
-      microsandbox:
-        optional: true
-      next:
-        optional: true
-      nuxt:
-        optional: true
-      react:
-        optional: true
-      svelte:
-        optional: true
-      vite:
-        optional: true
-      vue:
-        optional: true
-
-  eve@0.15.1:
-    resolution: {integrity: sha512-hqy+4+lOn6K3EZQy4ueibWZc//zZYgEutg6BC2eHcAWEWmqgKs1hBH9Caw2zulEiI9NwCB7XMFyz2bYZM2YpjA==}
-    engines: {node: '>=24'}
-    hasBin: true
-    peerDependencies:
-      '@opentelemetry/api': ^1.0.0
-      '@sveltejs/kit': ^2.0.0
-      ai: 7.0.0-beta.178
-      braintrust: ^3.0.0
-      just-bash: ^3.0.0
-      microsandbox: ^0.5.0
-      next: ^16.0.0
-      nuxt: ^4.0.0
-      react: ^19.0.0
-      svelte: ^5.0.0
-      vite: ^8.0.0
-      vue: ^3.5.0
-    peerDependenciesMeta:
-      '@opentelemetry/api':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      braintrust:
-        optional: true
-      just-bash:
-        optional: true
-      microsandbox:
-        optional: true
-      next:
-        optional: true
-      nuxt:
-        optional: true
-      react:
-        optional: true
-      svelte:
-        optional: true
-      vite:
-        optional: true
-      vue:
         optional: true
 
   eventsource-parser@3.1.0:
@@ -1025,22 +922,22 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@4.0.0-beta.109(zod@4.3.6)':
+  '@ai-sdk/gateway@4.0.8(zod@4.3.6)':
     dependencies:
-      '@ai-sdk/provider': 4.0.0-beta.19
-      '@ai-sdk/provider-utils': 5.0.0-beta.49(zod@4.3.6)
+      '@ai-sdk/provider': 4.0.1
+      '@ai-sdk/provider-utils': 5.0.3(zod@4.3.6)
       '@vercel/oidc': 3.2.0
       zod: 4.3.6
 
-  '@ai-sdk/provider-utils@5.0.0-beta.49(zod@4.3.6)':
+  '@ai-sdk/provider-utils@5.0.3(zod@4.3.6)':
     dependencies:
-      '@ai-sdk/provider': 4.0.0-beta.19
+      '@ai-sdk/provider': 4.0.1
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.0
       zod: 4.3.6
 
-  '@ai-sdk/provider@4.0.0-beta.19':
+  '@ai-sdk/provider@4.0.1':
     dependencies:
       json-schema: 0.4.0
 
@@ -1217,26 +1114,19 @@ snapshots:
     dependencies:
       execa: 5.1.1
 
-  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
+  '@vercel/connect@0.2.2(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))':
     dependencies:
       '@vercel/oidc': 3.6.1
     optionalDependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+      ai: 7.0.10(zod@4.3.6)
+      eve: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
 
-  '@vercel/connect@0.2.2(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
-    dependencies:
-      '@vercel/oidc': 3.6.1
-    optionalDependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
-
-  '@vercel/connect@0.2.7(ai@7.0.0-beta.178(zod@4.3.6))(eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10))':
+  '@vercel/connect@0.2.7(ai@7.0.10(zod@4.3.6))(eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10))':
     dependencies:
       '@vercel/oidc': 3.7.0
     optionalDependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
-      eve: 0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10)
+      ai: 7.0.10(zod@4.3.6)
+      eve: 0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10)
 
   '@vercel/oidc@3.2.0': {}
 
@@ -1254,11 +1144,11 @@ snapshots:
 
   '@workflow/serde@4.1.0': {}
 
-  ai@7.0.0-beta.178(zod@4.3.6):
+  ai@7.0.10(zod@4.3.6):
     dependencies:
-      '@ai-sdk/gateway': 4.0.0-beta.109(zod@4.3.6)
-      '@ai-sdk/provider': 4.0.0-beta.19
-      '@ai-sdk/provider-utils': 5.0.0-beta.49(zod@4.3.6)
+      '@ai-sdk/gateway': 4.0.8(zod@4.3.6)
+      '@ai-sdk/provider': 4.0.1
+      '@ai-sdk/provider-utils': 5.0.3(zod@4.3.6)
       zod: 4.3.6
 
   commander@2.20.3: {}
@@ -1286,9 +1176,9 @@ snapshots:
       httpxy: 0.5.3
       srvx: 0.11.16
 
-  eve@0.11.10(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
+  eve@0.18.0(@upstash/redis@1.38.0)(ai@7.0.10(zod@4.3.6))(microsandbox@0.5.10):
     dependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
+      ai: 7.0.10(zod@4.3.6)
       nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
     optionalDependencies:
       microsandbox: 0.5.10
@@ -1327,96 +1217,7 @@ snapshots:
       - rollup
       - sqlite3
       - uploadthing
-      - wrangler
-      - xml2js
-      - zephyr-agent
-
-  eve@0.13.3(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
-    dependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
-      nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
-    optionalDependencies:
-      microsandbox: 0.5.10
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@electric-sql/pglite'
-      - '@libsql/client'
-      - '@netlify/blobs'
-      - '@netlify/runtime'
-      - '@planetscale/database'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - '@vercel/queue'
-      - aws4fetch
-      - better-sqlite3
-      - chokidar
-      - dotenv
-      - drizzle-orm
-      - giget
-      - idb-keyval
-      - ioredis
-      - jiti
-      - lru-cache
-      - miniflare
-      - mongodb
-      - mysql2
-      - rollup
-      - sqlite3
-      - uploadthing
-      - wrangler
-      - xml2js
-      - zephyr-agent
-
-  eve@0.15.1(@upstash/redis@1.38.0)(ai@7.0.0-beta.178(zod@4.3.6))(microsandbox@0.5.10):
-    dependencies:
-      ai: 7.0.0-beta.178(zod@4.3.6)
-      nitro: 3.0.260610-beta(@upstash/redis@1.38.0)
-    optionalDependencies:
-      microsandbox: 0.5.10
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@electric-sql/pglite'
-      - '@libsql/client'
-      - '@netlify/blobs'
-      - '@netlify/runtime'
-      - '@planetscale/database'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - '@vercel/queue'
-      - aws4fetch
-      - better-sqlite3
-      - chokidar
-      - dotenv
-      - drizzle-orm
-      - giget
-      - idb-keyval
-      - ioredis
-      - jiti
-      - lru-cache
-      - miniflare
-      - mongodb
-      - mysql2
-      - rollup
-      - sqlite3
-      - uploadthing
+      - vite
       - wrangler
       - xml2js
       - zephyr-agent
