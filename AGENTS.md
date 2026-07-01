@@ -36,7 +36,7 @@ Use `.agents/skills/eve/SKILL.md` as the routed index: it maps each topic to the
 4. **New agents are created only via `pnpm agent:new`.** Never hand-copy an existing app or run `eve init` inside this repo.
 5. **Run `pnpm verify` before finishing any task.** If you touched only one app, `pnpm turbo run lint typecheck build test eval:ci --filter <app>` is an acceptable fast path, but the full `pnpm verify` is the definition of done.
 6. **Deterministic evals (tag `ci`) must stay green without secrets.** Never add a real-model or network dependency to an eval tagged `ci`; that belongs in the `live` tier (`evals/live/`, tag `live`).
-7. After bumping `eve` in the catalog, re-validate `.agents/skills/eve/SKILL.md` against the new `node_modules/eve/docs/meta.json` (paths move between releases).
+7. Upgrade eve only via `pnpm upgrade:eve [version]` — it bumps the catalog, prints the CHANGELOG delta, re-validates `.agents/skills/eve/SKILL.md` doc paths, and runs `pnpm verify`. If it reports missing skill paths, update the skill index before committing.
 
 ## Per-app AGENTS.md
 
