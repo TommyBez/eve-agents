@@ -24,6 +24,12 @@ Vercel-first: **one Vercel project per app**, deployed with the eve CLI or Git i
 
    `eve deploy` runs `vercel deploy --prod`, installing dependencies first and pulling env vars after. Once the project is Git-connected, pushes deploy automatically (previews on branches, production on the default branch) and `eve deploy` is only needed for manual production pushes.
 
+   For deploy-plus-verify in one step (requires the app to be linked already):
+
+   ```bash
+   pnpm deploy:app <app>      # eve deploy, then smoke-tests the deployment URL
+   ```
+
 ## 2. Environment variables
 
 - Vercel is the store; `.env.example` is the contract. Every var the app reads is listed there with a placeholder.
@@ -48,15 +54,10 @@ Work through this before pointing real traffic (or a real GitHub App / Slack wor
 - [ ] Smoke-test the live routes:
 
   ```bash
-  curl https://<your-app>/eve/v1/health
-
-  curl -X POST https://<your-app>/eve/v1/session \
-    -H 'content-type: application/json' \
-    -d '{"message":"Hello from production"}'
-  # → { "sessionId": "…" }
-
-  curl https://<your-app>/eve/v1/session/<sessionId>/stream
+  pnpm smoke https://<your-app> --session
   ```
+
+  Checks `/eve/v1/health`, creates a session, and asserts the stream responds. Sends `VERCEL_AUTOMATION_BYPASS_SECRET` (if set) as the protection-bypass header; extra headers via repeatable `--header "Name: value"`. Equivalent raw `curl` flow, if you prefer: `GET /eve/v1/health`, `POST /eve/v1/session` with `{"message":"…"}`, then `GET /eve/v1/session/<sessionId>/stream`.
 
 - [ ] Or smoke-test interactively — attach the TUI to the deployment:
 
