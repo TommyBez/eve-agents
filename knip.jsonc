@@ -1,0 +1,46 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // Dead-code / unused-dependency detection. Run with `pnpm exec knip`.
+  // Knip respects .gitignore by default, so generated trees (.eve, .output,
+  // .workflow-data, .turbo, dist) are already excluded. Handlebars templates
+  // under turbo/generators/templates are never matched by the js/ts globs.
+  "workspaces": {
+    ".": {
+      "entry": [
+        // Each script is an independently-run executable, not a library.
+        "scripts/*.mjs",
+        // Plop generator behind `pnpm agent:new` (turbo gen agent).
+        "turbo/generators/config.ts"
+      ]
+    },
+    "apps/*": {
+      // Eve discovers these by filesystem convention — there is no classic
+      // "main" that imports them, so knip must treat each as an entry point.
+      // Vitest config/tests are covered by knip's built-in vitest plugin.
+      "entry": [
+        "agent/agent.ts",
+        "agent/channels/*.ts",
+        "agent/tools/*.ts",
+        "agent/schedules/*.ts",
+        "agent/connections/*.ts",
+        "agent/hooks/*.ts",
+        "agent/instrumentation.ts",
+        "evals/evals.config.ts",
+        "evals/**/*.eval.ts"
+      ],
+      "ignoreDependencies": [
+        // Part of the eve scaffold's baseline dependency set: apps opt into
+        // it for channel/connection auth, and scripts/check-scaffold-drift.mjs
+        // requires app package.json files to keep matching the scaffold
+        // (extraDependencies: []), so it may legitimately be unimported.
+        "@vercel/connect"
+      ]
+    },
+    "packages/typescript-config": {
+      // JSON-only config package (base.json consumed via tsconfig "extends").
+      // No js/ts source to analyze; declare it empty so nothing is flagged.
+      "entry": [],
+      "project": []
+    }
+  }
+}

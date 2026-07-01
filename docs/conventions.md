@@ -183,3 +183,10 @@ If a required env var is missing, stop and report it. Never invent recipients or
 ## Formatting and linting
 
 Biome, one config at the root (`biome.json`). `pnpm format` writes, `lint` tasks check. Don't add per-app lint configs or a second formatter.
+
+## Dead code: knip
+
+`pnpm knip` (part of `pnpm verify` and CI) flags unused files, exports, and dependencies. Config lives in `knip.jsonc`, with a comment per non-obvious entry. Two maintenance rules:
+
+- If a future eve release adds a new discovery directory (a new `agent/<slot>/` convention), add it to the `apps/*` entry globs in `knip.jsonc`.
+- A dependency that is intentionally unimported (e.g. part of the eve scaffold baseline, like `@vercel/connect` before an app wires up auth) belongs in `ignoreDependencies` with a comment — mirroring `scripts/check-scaffold-drift.mjs`.

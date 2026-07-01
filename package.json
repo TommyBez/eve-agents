@@ -16,13 +16,14 @@
     "eval:ci": "turbo run eval:ci",
     "format": "biome format --write .",
     "info": "turbo run info",
+    "knip": "knip --no-config-hints",
     "lint": "turbo run lint",
     "smoke": "node scripts/smoke.mjs",
     "start": "turbo run start",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "upgrade:eve": "node scripts/upgrade-eve.mjs",
-    "verify": "node scripts/check-cross-app-imports.mjs && node scripts/check-env-contract.mjs && turbo run lint typecheck build test eval:ci"
+    "verify": "node scripts/check-cross-app-imports.mjs && node scripts/check-env-contract.mjs && knip --no-config-hints && turbo run lint typecheck build test eval:ci"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

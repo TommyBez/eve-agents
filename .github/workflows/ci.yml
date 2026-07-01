@@ -59,6 +59,10 @@ jobs:
       - name: Env contract check
         run: node scripts/check-env-contract.mjs
 
+      # Dead code / unused dependencies (~1s; config in knip.jsonc).
+      - name: Knip
+        run: pnpm exec knip --no-config-hints
+
       # PRs: only packages affected vs. the base branch (turbo auto-detects GITHUB_BASE_REF).
       - name: Verify (affected)
         if: github.event_name == 'pull_request'
