@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { env } from "./env.js";
 
 const DEFAULT_RATE_LIMIT_PREFIX = "evex:code-reviewer";
 const DEFAULT_PR_COOLDOWN_SECONDS = 900;
@@ -19,7 +20,7 @@ type RateLimitReason =
   | "repo_daily_limit"
   | "rate_limit_unavailable";
 
-type RateLimitConfig = {
+export type RateLimitConfig = {
   cooldownReply: boolean;
   cooldownReplySeconds: number;
   enabled: boolean;
@@ -259,7 +260,8 @@ function getRedis() {
 }
 
 function hasUpstashEnvironment() {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  const { KV_REST_API_TOKEN, KV_REST_API_URL } = env();
+  return Boolean(KV_REST_API_URL && KV_REST_API_TOKEN);
 }
 
 function unavailableDecision(
@@ -324,34 +326,36 @@ function retryAfterSeconds(resetAt: number) {
   return Math.max(1, Math.ceil((resetAt - Date.now()) / 1000));
 }
 
-function readRateLimitConfig(): RateLimitConfig {
+export function readRateLimitConfig(): RateLimitConfig {
+  const environment = env();
+
   return {
-    cooldownReply: readBoolean(process.env.CODE_REVIEWER_COOLDOWN_REPLY, true),
+    cooldownReply: readBoolean(environment.CODE_REVIEWER_COOLDOWN_REPLY, true),
     cooldownReplySeconds: readPositiveInteger(
-      process.env.CODE_REVIEWER_COOLDOWN_REPLY_SECONDS,
+      environment.CODE_REVIEWER_COOLDOWN_REPLY_SECONDS,
       DEFAULT_COOLDOWN_REPLY_SECONDS,
     ),
-    enabled: readBoolean(process.env.CODE_REVIEWER_RATE_LIMIT_ENABLED, true),
+    enabled: readBoolean(environment.CODE_REVIEWER_RATE_LIMIT_ENABLED, true),
     failureMode: readFailureMode(
-      process.env.CODE_REVIEWER_RATE_LIMIT_FAILURE_MODE,
+      environment.CODE_REVIEWER_RATE_LIMIT_FAILURE_MODE,
     ),
     prefix:
-      process.env.CODE_REVIEWER_RATE_LIMIT_PREFIX?.trim() ||
+      environment.CODE_REVIEWER_RATE_LIMIT_PREFIX?.trim() ||
       DEFAULT_RATE_LIMIT_PREFIX,
     privateRepoDailyLimit: readNonNegativeInteger(
-      process.env.CODE_REVIEWER_PRIVATE_REPO_DAILY_LIMIT,
+      environment.CODE_REVIEWER_PRIVATE_REPO_DAILY_LIMIT,
       DEFAULT_PRIVATE_REPO_DAILY_LIMIT,
     ),
     prCooldownSeconds: readPositiveInteger(
-      process.env.CODE_REVIEWER_PR_COOLDOWN_SECONDS,
+      environment.CODE_REVIEWER_PR_COOLDOWN_SECONDS,
       DEFAULT_PR_COOLDOWN_SECONDS,
     ),
     publicRepoDailyLimit: readNonNegativeInteger(
-      process.env.CODE_REVIEWER_PUBLIC_REPO_DAILY_LIMIT,
+      environment.CODE_REVIEWER_PUBLIC_REPO_DAILY_LIMIT,
       DEFAULT_PUBLIC_REPO_DAILY_LIMIT,
     ),
     userPrCooldownSeconds: readPositiveInteger(
-      process.env.CODE_REVIEWER_USER_PR_COOLDOWN_SECONDS,
+      environment.CODE_REVIEWER_USER_PR_COOLDOWN_SECONDS,
       DEFAULT_USER_PR_COOLDOWN_SECONDS,
     ),
   };

@@ -3,6 +3,7 @@ import { includes } from "eve/evals/expect";
 
 export default defineEval({
   description: "Submits a no-findings review for an innocuous PR diff.",
+  tags: ["live"],
   async test(t) {
     await t.send(`
 <github_context>

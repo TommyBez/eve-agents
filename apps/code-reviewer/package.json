@@ -11,7 +11,7 @@
     "build": "eve build",
     "dev": "eve dev",
     "eval": "eve eval",
-    "eval:ci": "eve eval --tag ci --strict",
+    "eval:ci": "EVE_MOCK_MODEL=1 eve eval --tag ci --strict",
     "info": "eve info",
     "lint": "biome check .",
     "start": "eve start",

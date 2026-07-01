@@ -8,6 +8,7 @@ import {
   githubChannel,
 } from "eve/channels/github";
 import { toolResultFrom } from "eve/tools";
+import { env } from "../lib/env.js";
 import {
   checkCodeReviewRateLimit,
   claimReviewPublication,
@@ -19,7 +20,7 @@ import submitPrReviewTool, {
   type SubmitPrReviewOutput,
 } from "../tools/submit_pr_review.js";
 
-const BOT_NAME = process.env.GITHUB_APP_SLUG || "code-reviewer";
+const BOT_NAME = env().GITHUB_APP_SLUG || "code-reviewer";
 const BOT_MENTION_PATTERN = new RegExp(
   `@${escapeRegExp(BOT_NAME)}(?=$|[^A-Za-z0-9_-])`,
   "i",
