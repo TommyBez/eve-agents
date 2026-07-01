@@ -7,7 +7,10 @@
   "scripts": {
     "agent:new": "turbo gen agent",
     "build": "turbo run build",
+    "check:env-contract": "node scripts/check-env-contract.mjs",
+    "check:imports": "node scripts/check-cross-app-imports.mjs",
     "dev": "turbo run dev",
+    "doctor": "node scripts/doctor.mjs",
     "eval": "turbo run eval",
     "eval:ci": "turbo run eval:ci",
     "format": "biome format --write .",
@@ -16,7 +19,7 @@
     "start": "turbo run start",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "verify": "node scripts/check-cross-app-imports.mjs && turbo run lint typecheck build test eval:ci"
+    "verify": "node scripts/check-cross-app-imports.mjs && node scripts/check-env-contract.mjs && turbo run lint typecheck build test eval:ci"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

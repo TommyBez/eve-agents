@@ -2,6 +2,8 @@
 
 Real failure modes hit in this repo, with fixes. Generic first step for anything eve-shaped: `pnpm --filter <app> info` — it prints what eve discovered and any diagnostics, faster than booting the dev server.
 
+For environment problems (wrong Node, broken install, missing env files), run `pnpm doctor` first — it checks the toolchain and prints the exact fix command for each failure.
+
 ## `pnpm install` fails with an engine error
 
 **Symptom:** install aborts with an "unsupported engine" / Node-version error.

@@ -55,6 +55,10 @@ jobs:
       - name: Cross-app import check
         run: node scripts/check-cross-app-imports.mjs
 
+      # AGENTS.md hard rule 3: every env var an app reads is listed in its .env.example.
+      - name: Env contract check
+        run: node scripts/check-env-contract.mjs
+
       # PRs: only packages affected vs. the base branch (turbo auto-detects GITHUB_BASE_REF).
       - name: Verify (affected)
         if: github.event_name == 'pull_request'
