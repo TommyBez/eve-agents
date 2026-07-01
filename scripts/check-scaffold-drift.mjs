@@ -21,9 +21,11 @@ const TEMPLATES = path.join(ROOT, "turbo", "generators", "templates", "agent");
 // Every entry needs a reason. Anything not listed here is reported as drift.
 const ALLOWED_DIFFERENCES = {
   // Repo-standard scripts the generator adds beyond the scaffold's set.
-  extraScripts: ["eval", "eval:ci", "info", "lint", "test"],
-  // Runtime deps we add beyond the scaffold's set (none today).
-  extraDependencies: [],
+  // eval:record records model responses into eval fixtures (@repo/eval-fixtures).
+  extraScripts: ["eval", "eval:ci", "eval:record", "info", "lint", "test"],
+  // Runtime deps we add beyond the scaffold's set: the record-and-replay
+  // eval-fixture helper every generated agent.ts wires its model through.
+  extraDependencies: ["@repo/eval-fixtures"],
   // Tooling we add: biome (lint), shared tsconfig package, vitest (tests).
   extraDevDependencies: ["@biomejs/biome", "@repo/typescript-config", "vitest"],
 };

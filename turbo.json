@@ -17,6 +17,10 @@
       "cache": false
     },
     "eval:ci": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "eval:record": {
       "cache": false
     },
     "info": {

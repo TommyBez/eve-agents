@@ -28,6 +28,7 @@ deterministic fixture (see `agent/agent.ts`) — tests and CI evals need no env.
 pnpm --filter code-reviewer run dev        # local TUI / dev server
 pnpm --filter code-reviewer run test       # vitest unit tests (tests/)
 pnpm --filter code-reviewer run eval:ci    # deterministic evals, no API keys
+pnpm --filter code-reviewer run eval:record # re-record evals/fixtures/recordings.json
 pnpm --filter code-reviewer run eval       # all evals (live ones need AI_GATEWAY_API_KEY)
 pnpm --filter code-reviewer run lint       # biome check
 pnpm --filter code-reviewer run typecheck  # tsc
@@ -35,4 +36,6 @@ pnpm --filter code-reviewer run build      # eve build
 ```
 
 Eval tiers: `evals/deterministic/` (tag `ci`, mock model, runs on every PR)
-and `evals/live/` (tag `live`, real model, nightly / on demand).
+and `evals/live/` (tag `live`, real model, nightly / on demand). The
+`recorded`-tagged eval replays committed model responses from
+`evals/fixtures/recordings.json` — see "Recorded evals" in `docs/testing.md`.

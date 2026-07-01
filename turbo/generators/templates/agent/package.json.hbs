@@ -13,6 +13,7 @@
     "dev": "eve dev",
     "eval": "eve eval",
     "eval:ci": "EVE_MOCK_MODEL=1 eve eval --tag ci --strict",
+    "eval:record": "EVE_RECORD_FIXTURES=1 eve eval --tag recorded",
     "info": "eve info",
     "lint": "biome check .",
     "start": "eve start",
@@ -20,6 +21,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@repo/eval-fixtures": "workspace:*",
     "@vercel/connect": "catalog:",
     "ai": "catalog:",
     "eve": "catalog:",

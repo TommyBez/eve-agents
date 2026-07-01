@@ -1,0 +1,29 @@
+{
+  "94088e58db81": {
+    "messagePreview": "<github_context> repository: example/widget pull_request_number: 12 sender: maintainer head_sha: def456 </github_contex\u2026",
+    "steps": [
+      {
+        "toolCalls": [
+          {
+            "input": {
+              "comments": [
+                {
+                  "body": "The ownership check on requestedUserId was removed; any signed-in user can now read other users' data.",
+                  "line": 4,
+                  "path": "src/auth.ts",
+                  "severity": "blocking",
+                  "side": "RIGHT"
+                }
+              ],
+              "summary": "One blocking finding: the authorization check comparing session.userId to requestedUserId was dropped."
+            },
+            "name": "submit_pr_review"
+          }
+        ]
+      },
+      {
+        "text": "Published the review with submit_pr_review: one blocking inline finding on src/auth.ts."
+      }
+    ]
+  }
+}

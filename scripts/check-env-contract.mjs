@@ -50,6 +50,10 @@ const ALLOWLIST = [
   // model; documented as a commented-out line in .env.example by convention
   // ("never set this in production"), so it is intentionally not a KEY= line.
   "EVE_MOCK_MODEL",
+  // Set by `pnpm run eval:record` to record model responses into committed
+  // eval fixtures (see @repo/eval-fixtures). Mirrors EVE_MOCK_MODEL: also a
+  // commented-out .env.example line by convention, never set in production.
+  "EVE_RECORD_FIXTURES",
   // Standard Node runtime mode; set by the platform, never by developers.
   "NODE_ENV",
   // Set by CI providers (GitHub Actions et al.), not user-configurable.

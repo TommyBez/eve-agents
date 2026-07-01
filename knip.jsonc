@@ -36,6 +36,11 @@
         "@vercel/connect"
       ]
     },
+    "packages/eval-fixtures": {
+      // Just-in-time TS library: apps import it through the package.json
+      // "exports" entry. Vitest config/tests are covered by the vitest plugin.
+      "entry": ["src/index.ts"]
+    },
     "packages/typescript-config": {
       // JSON-only config package (base.json consumed via tsconfig "extends").
       // No js/ts source to analyze; declare it empty so nothing is flagged.

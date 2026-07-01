@@ -7,7 +7,7 @@ Every agent is testable at three tiers, and every surface (HTTP, GitHub, Slack, 
 | Tier | Lives in | Tool | When it runs | Needs API keys? |
 | --- | --- | --- | --- | --- |
 | Unit tests | `apps/<app>/tests/` | vitest (`pnpm --filter <app> test`) | every PR, cached by turbo | no |
-| Deterministic evals | `apps/<app>/evals/deterministic/`, tag `ci` | `eve eval --tag ci --strict` with a `mockModel` fixture | every PR (`pnpm verify`) | no |
+| Deterministic evals | `apps/<app>/evals/deterministic/`, tag `ci` | `eve eval --tag ci --strict` with a `mockModel` fixture (hand-written or recorded) | every PR (`pnpm verify`) | no |
 | Live evals | `apps/<app>/evals/live/`, tag `live` | `eve eval --tag live --strict` against the real model | nightly + on demand | yes (`AI_GATEWAY_API_KEY`) |
 
 - **Unit tests** cover pure logic in `agent/lib/*` and tool `execute` bodies — they are plain functions, import and call them. Reference: `apps/code-reviewer/tests/`.
@@ -56,6 +56,28 @@ eve eval --tag ci --strict --junit .eve/junit.xml   # CI adds JUnit output for a
 `--strict` turns soft below-threshold assertions into failures. Run artifacts (per-eval event streams, `t.log` lines) land under `.eve/evals/<timestamp>/` — read those when an eval fails; the console output is intentionally terse.
 
 Hard rule: nothing tagged `ci` may depend on a real model, network service, or secret.
+
+## Recorded evals
+
+A recorded eval is a deterministic eval whose model responses were captured from a real run instead of hand-written: tag it `["ci", "recorded"]` and its responses replay from the committed `evals/fixtures/recordings.json` — prompt-regression coverage in CI with zero secrets. The wiring is `evalModel` from `@repo/eval-fixtures` in `agent/agent.ts` (the exemplar: `apps/code-reviewer`), and one file serves both tiers:
+
+```bash
+pnpm --filter <app> run eval:record   # EVE_RECORD_FIXTURES=1: run against the real
+                                      # model (needs AI_GATEWAY_API_KEY) and record
+                                      # each response into evals/fixtures/recordings.json
+git add evals/fixtures/recordings.json   # commit the fixture with your prompt change
+pnpm --filter <app> run eval:ci       # EVE_MOCK_MODEL=1: the same eval replays the file
+```
+
+No API key handy? Bootstrap or refresh fixtures offline from the hand-written mock instead — this is a supported mode, not a hack:
+
+```bash
+EVE_MOCK_MODEL=1 pnpm --filter <app> run eval:record
+```
+
+How replay matches a fixture: the key is a short sha256 of the trimmed last user message, and the step index is the number of tool results already in the prompt — so a tool-call turn and its closing text turn are separate recorded steps. Misses fall back to the app's hand-written `mock` responder; with no fallback you get a `FixtureMissError` naming the missing key and the `eval:record` command that fixes it.
+
+Two review habits: fixture diffs are prompt-behavior diffs, so read `recordings.json` changes in PRs the way you'd read a snapshot-test diff; and keep each recorded eval's message distinct from other evals' messages, or their fixture keys collide.
 
 ## HTTP surface
 
