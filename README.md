@@ -33,7 +33,7 @@ From there: fill in `agent/instructions.md`, add tools, and follow [docs/adding-
 
 ```text
 eve-agents/
-├── AGENTS.md                    # canonical rules for AI coding agents (CLAUDE.md and .cursor defer here)
+├── AGENTS.md                    # canonical rules for AI coding agents (Claude, Cursor, Codex all read it)
 ├── docs/                        # executable playbooks (see below)
 ├── apps/
 │   └── code-reviewer/           # the exemplar agent — every new app mirrors its shape
