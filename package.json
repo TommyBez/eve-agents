@@ -5,6 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
+    "agent:add": "node scripts/add-agent.mjs",
     "agent:new": "turbo gen agent",
     "build": "turbo run build",
     "check:env-contract": "node scripts/check-env-contract.mjs",

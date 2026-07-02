@@ -14,6 +14,7 @@ Turborepo monorepo of [eve](https://www.npmjs.com/package/eve)-framework agents.
 
 ```bash
 pnpm agent:new                     # scaffold a new agent (turbo gen agent) — the ONLY way to create one
+pnpm agent:add @evex/<item>        # scaffold from the evex.sh registry (agent:new + overlay; see docs/adding-an-agent.md)
 pnpm verify                        # lint + typecheck + build + test + eval:ci — run before finishing ANY task
 pnpm --filter <app> dev            # run one agent's TUI REPL
 pnpm --filter <app> eval           # run one agent's evals (all tiers)

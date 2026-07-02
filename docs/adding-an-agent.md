@@ -2,6 +2,30 @@
 
 End-to-end playbook: scaffold, implement, run, test, verify, deploy. New agents are created **only** through the generator — never by copying an existing app or running `eve init` inside this repo.
 
+## Start from a registry agent (evex.sh)
+
+Instead of starting from the blank scaffold, install a published agent from the [evex.sh](https://evex.sh) registry:
+
+```bash
+pnpm agent:add @evex/<item> [name] [--yes]
+# e.g.
+pnpm agent:add @evex/x-hot-topic-digest
+pnpm agent:add postgres-data-analyst my-analyst   # bare names default to @evex
+pnpm agent:add --from-file ./item.json            # offline/private registry-item JSON
+```
+
+`agent:add` runs `agent:new` under the hood (so the app keeps the repo's standard shape), then layers the registry item on top. What it does beyond `agent:new`:
+
+- **Overlay** — the item's files (instructions, tools, channels, skills, evals, …) are written into `apps/<name>`, replacing scaffold files on collision. `package.json` / `tsconfig.json` / `turbo.json` are never overwritten by the registry.
+- **Dependency mapping** — the item's dependencies are merged into the app's `package.json`: packages managed by the pnpm catalog become `"catalog:"`, everything else keeps the item's range (app-specific deps are fine, per `docs/conventions.md`). Untyped deps get a matching `@types/<pkg>` devDependency when one exists.
+- **evalModel rewiring** — registry items ship a plain `model: "provider/model"`; `agent:add` rewrites it to the `evalModel({ mock, production })` pattern from `apps/code-reviewer/agent/agent.ts` so the `ci`-tagged smoke eval (and `pnpm verify`) stays deterministic and secret-free. If no safe `model:` anchor is found, the scaffold's already-wired `agent.ts` is kept and the registry version is saved as `agent/agent.ts.registry` with a printed TODO for manual merging.
+- **Auto env contract** — every env var the overlaid code reads but `.env.example` misses is appended under a `# From <item>` header, keeping `pnpm check:env-contract` green. Fill in real values before running live.
+- **Repo-convention fixes** — extensionless relative imports get `.js` added (nodenext resolution), unused exports are stripped (knip), and everything is Biome-formatted. It finishes by running lint + typecheck + eval:ci for the new app.
+
+**Heed the eve-version warning.** Registry items declare the eve version they were authored against (e.g. `eve@^0.15.1`). When that range does not overlap the workspace catalog's version, `agent:add` prints a prominent warning: the app still installs against the catalog version, but eve is pre-1.0 and APIs move — review the item's code against the bundled docs (`apps/<name>/node_modules/eve/docs/`) before shipping. The same warning applies to any other catalog-managed dependency (e.g. zod).
+
+The item's own evals are installed untagged: they run with `pnpm --filter <name> eval` (live model, needs keys), never in the `ci` tier.
+
 ## 1. Scaffold
 
 Interactive (prompts for name, description, and primary surface):

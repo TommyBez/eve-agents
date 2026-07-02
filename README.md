@@ -19,6 +19,8 @@ pnpm install
 
 # 2. Scaffold an agent
 pnpm agent:new       # prompts for name, description, surface
+# …or start from a published agent on the evex.sh registry:
+pnpm agent:add @evex/code-reviewer
 
 # 3. Run it
 pnpm --filter <name> dev    # interactive TUI REPL against the real runtime
