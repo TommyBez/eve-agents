@@ -31,8 +31,9 @@ Review this diff and publish the PR review with submit_pr_review.
 
     t.succeeded();
     t.calledTool("submit_pr_review", { count: 1 });
-    // This text comes from the recorded fixture step, not the live mock — see
-    // docs/testing.md ("Recorded evals") for the record → commit → replay loop.
-    t.messageIncludes("Published the review");
+    // Assert behavior, not phrasing: the reply must reference the finding, but
+    // its wording is whatever the recorded model said — see docs/testing.md
+    // ("Recorded evals") for the record → commit → replay loop.
+    t.messageIncludes(/sql injection|injection|concatenat/i);
   },
 });

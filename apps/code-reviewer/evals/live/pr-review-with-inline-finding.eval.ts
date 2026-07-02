@@ -29,6 +29,6 @@ Review this diff and publish the PR review with submit_pr_review.
 
     t.succeeded();
     t.calledTool("submit_pr_review");
-    t.check(t.reply, includes("submit_pr_review").soft());
+    t.check(t.reply, includes(/auth|forbidden|security|vulnerab/i).soft());
   },
 });

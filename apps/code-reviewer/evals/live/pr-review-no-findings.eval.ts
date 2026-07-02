@@ -25,6 +25,11 @@ Review this diff and publish the PR review with submit_pr_review.
 
     t.succeeded();
     t.calledTool("submit_pr_review");
-    t.check(t.reply, includes("No actionable").soft());
+    t.check(
+      t.reply,
+      includes(
+        /no (actionable|issues|findings|concerns)|looks good|lgtm/i,
+      ).soft(),
+    );
   },
 });
