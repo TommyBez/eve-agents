@@ -1,0 +1,16 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["NODE_ENV"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "../../docs/**",
+        "../../AGENTS.md",
+        "../../README.md"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    }
+  }
+}

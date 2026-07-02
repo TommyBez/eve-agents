@@ -1,6 +1,6 @@
 # The playground
 
-`apps/playground` is a Next.js app that gives every registered agent a browser UI: a chat page at `/agents/<id>`, plus diagnostics and the event stream for that agent. It is the one **non-agent** app in `apps/` (the sanctioned exception to the "new apps only via `pnpm agent:new`" rule) — everything else about it is ordinary workspace code.
+`apps/playground` is a Next.js app that gives every registered agent a browser UI: a chat page at `/agents/<id>`, plus diagnostics and the event stream for that agent. It is a **non-agent** app in `apps/` (a sanctioned exception to the "new apps only via `pnpm agent:new`" rule, alongside `apps/docs`) — everything else about it is ordinary workspace code.
 
 ## The config is the source of truth
 

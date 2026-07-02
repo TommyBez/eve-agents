@@ -1,4 +1,4 @@
-# eve-agents
+# evex-starter
 
 A starter template for running a **fleet of [eve](https://www.npmjs.com/package/eve)-framework agents** in one Turborepo monorepo: one app per agent, one command to scaffold a new one, one command to verify everything, and Vercel-first deployment.
 
@@ -35,14 +35,16 @@ From there: fill in `agent/instructions.md`, add tools, and follow [docs/adding-
 ## Repo layout
 
 ```text
-eve-agents/
+evex-starter/
 ├── AGENTS.md                    # canonical rules for AI coding agents (Claude, Cursor, Codex all read it)
 ├── docs/                        # executable playbooks (see below)
 ├── apps/
-│   └── code-reviewer/           # the exemplar agent — every new app mirrors its shape
-│       ├── agent/               # agent.ts, instructions.md, channels/, tools/, skills/, lib/
-│       ├── evals/               # deterministic/ (tag ci) + live/ (tag live)
-│       └── tests/               # vitest unit tests
+│   ├── code-reviewer/           # the exemplar agent — every new app mirrors its shape
+│   │   ├── agent/               # agent.ts, instructions.md, channels/, tools/, skills/, lib/
+│   │   ├── evals/               # deterministic/ (tag ci) + live/ (tag live)
+│   │   └── tests/               # vitest unit tests
+│   ├── docs/                    # the docs site (Next.js + Fumadocs) — renders docs/, README, AGENTS.md
+│   └── playground/              # browser chat + diagnostics for every registered agent
 ├── packages/
 │   └── typescript-config/       # @repo/typescript-config — shared tsconfig base
 ├── turbo/generators/            # `pnpm agent:new` scaffolder + templates
@@ -70,3 +72,4 @@ Per-surface recipes (HTTP, GitHub, Slack, Linear, schedules, deployed targets): 
 - [docs/conventions.md](./docs/conventions.md) — naming, env prefixes, imports, the catalog, package extraction, channel auth, MCP + schedule patterns.
 - [docs/troubleshooting.md](./docs/troubleshooting.md) — real failure modes and fixes.
 - eve's own docs ship inside the package at `apps/<app>/node_modules/eve/docs/`; [.agents/skills/eve/SKILL.md](./.agents/skills/eve/SKILL.md) is the routed index into them.
+- Prefer a browser? `pnpm --filter docs dev` serves all of the above as a searchable site (`apps/docs`, built on Fumadocs).

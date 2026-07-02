@@ -274,7 +274,7 @@ async function checkNetwork() {
 }
 
 try {
-  console.log("eve-agents doctor\n");
+  console.log("evex-starter doctor\n");
   const apps = listApps();
 
   checkNodeVersion();

@@ -1,11 +1,12 @@
-# eve-agents
+# evex-starter
 
 Turborepo monorepo of [eve](https://www.npmjs.com/package/eve)-framework agents. One app per agent under `apps/`. Node 24 + pnpm 10, strictly enforced.
 
 ## Repo map
 
 - `apps/<name>/` — one eve agent per app. `apps/code-reviewer/` is the exemplar; new apps must mirror its shape.
-- `apps/playground/` — the playground UI (Next.js): chat, diagnostics, and events for every agent registered in `apps/playground/agents.config.json`. The one non-agent app, and the sanctioned exception to rule 4; manage its registry with `pnpm playground:agents` (see `docs/playground.md`).
+- `apps/playground/` — the playground UI (Next.js): chat, diagnostics, and events for every agent registered in `apps/playground/agents.config.json`. A non-agent app and a sanctioned exception to rule 4; manage its registry with `pnpm playground:agents` (see `docs/playground.md`).
+- `apps/docs/` — the documentation site (Next.js + Fumadocs). It renders this repo's canonical markdown (`docs/*.md`, `README.md`, `AGENTS.md`) via `<include>` wrappers — never duplicate content there (see `apps/docs/AGENTS.md`). The other sanctioned exception to rule 4.
 - `packages/typescript-config/` — shared tsconfig (`@repo/typescript-config`). Other shared code follows the same internal-package pattern.
 - `turbo/generators/` — the `pnpm agent:new` scaffolder and its templates.
 - `docs/` — executable playbooks (see Playbooks below).
