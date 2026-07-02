@@ -25,7 +25,10 @@ export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
   <Collapsible
-    className={cn("group not-prose mb-4 w-full rounded-md border", className)}
+    className={cn(
+      "group not-prose mb-4 w-full overflow-hidden rounded-lg border bg-card",
+      className,
+    )}
     {...props}
   />
 );
@@ -54,18 +57,38 @@ const statusLabels: Record<ToolPart["state"], string> = {
   "output-error": "Error",
 };
 
+// Status colors are reserved for meaning: ok=done, warn=waiting on a human,
+// danger=failed, brand=in flight. Always paired with an icon + label.
 const statusIcons: Record<ToolPart["state"], ReactNode> = {
-  "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-  "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
-  "input-available": <ClockIcon className="size-4 animate-pulse" />,
-  "input-streaming": <CircleIcon className="size-4" />,
-  "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
-  "output-denied": <XCircleIcon className="size-4 text-orange-600" />,
-  "output-error": <XCircleIcon className="size-4 text-red-600" />,
+  "approval-requested": <ClockIcon className="size-3.5 text-warn" />,
+  "approval-responded": <CheckCircleIcon className="size-3.5 text-brand" />,
+  "input-available": (
+    <ClockIcon className="size-3.5 animate-pulse text-brand" />
+  ),
+  "input-streaming": <CircleIcon className="size-3.5 text-muted-foreground" />,
+  "output-available": <CheckCircleIcon className="size-3.5 text-ok" />,
+  "output-denied": <XCircleIcon className="size-3.5 text-warn" />,
+  "output-error": <XCircleIcon className="size-3.5 text-danger" />,
+};
+
+const statusTones: Record<ToolPart["state"], string> = {
+  "approval-requested": "border-warn/40 bg-warn/10 text-warn",
+  "approval-responded": "border-brand/40 bg-brand/10 text-brand",
+  "input-available": "border-brand/40 bg-brand/10 text-brand",
+  "input-streaming": "text-muted-foreground",
+  "output-available": "border-ok/30 bg-ok/10 text-ok",
+  "output-denied": "border-warn/40 bg-warn/10 text-warn",
+  "output-error": "border-danger/40 bg-danger/10 text-danger",
 };
 
 export const getStatusBadge = (status: ToolPart["state"]) => (
-  <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
+  <Badge
+    className={cn(
+      "gap-1 rounded-full font-normal text-xs",
+      statusTones[status],
+    )}
+    variant="outline"
+  >
     {statusIcons[status]}
     {statusLabels[status]}
   </Badge>
@@ -85,17 +108,19 @@ export const ToolHeader = ({
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full items-center justify-between gap-4 p-3",
+        "flex w-full items-center justify-between gap-4 px-3 py-2.5 transition-colors hover:bg-accent/40",
         className,
       )}
       {...props}
     >
-      <div className="flex items-center gap-2">
-        <WrenchIcon className="size-4 text-muted-foreground" />
-        <span className="font-medium text-sm">{title ?? derivedName}</span>
+      <div className="flex min-w-0 items-center gap-2">
+        <WrenchIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        <span className="truncate font-medium font-mono text-[13px]">
+          {title ?? derivedName}
+        </span>
         {getStatusBadge(state)}
       </div>
-      <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+      <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
     </CollapsibleTrigger>
   );
 };
@@ -105,7 +130,7 @@ export type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
 export const ToolContent = ({ className, ...props }: ToolContentProps) => (
   <CollapsibleContent
     className={cn(
-      "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 space-y-4 p-4 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+      "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 space-y-3 border-t bg-background/40 p-3 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
       className,
     )}
     {...props}

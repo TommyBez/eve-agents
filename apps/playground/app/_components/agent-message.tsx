@@ -7,6 +7,8 @@ import type {
   EveMessagePart,
 } from "eve/react";
 import {
+  ArrowDownIcon,
+  ArrowUpIcon,
   CheckCircleIcon,
   ExternalLinkIcon,
   KeyRoundIcon,
@@ -22,6 +24,7 @@ import {
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
+import { Shimmer } from "@/components/ai-elements/shimmer";
 import {
   Tool,
   ToolContent,
@@ -38,11 +41,18 @@ export type AgentInputResponse = {
   readonly text?: string;
 };
 
+/** Token totals for one turn, summed from `step.completed` events. */
+export type TurnUsage = {
+  readonly inputTokens: number;
+  readonly outputTokens: number;
+};
+
 export function AgentMessage({
   canRespond,
   isStreaming,
   message,
   onInputResponses,
+  usage,
 }: {
   readonly canRespond: boolean;
   readonly isStreaming: boolean;
@@ -50,6 +60,7 @@ export function AgentMessage({
   readonly onInputResponses: (
     responses: readonly AgentInputResponse[],
   ) => void | Promise<void>;
+  readonly usage?: TurnUsage;
 }) {
   const lastTextIndex = message.parts.reduce(
     (last, part, index) => (part.type === "text" ? index : last),
@@ -58,6 +69,7 @@ export function AgentMessage({
 
   return (
     <Message
+      className="pg-enter"
       data-optimistic={message.metadata?.optimistic ? "true" : undefined}
       from={message.role}
     >
@@ -76,8 +88,28 @@ export function AgentMessage({
           />
         ))}
       </MessageContent>
+      {usage && (usage.inputTokens > 0 || usage.outputTokens > 0) ? (
+        <p
+          className="flex items-center gap-2.5 font-mono text-[10px] text-muted-foreground/70 tabular-nums"
+          data-testid="turn-usage"
+        >
+          <span className="flex items-center gap-0.5">
+            <ArrowUpIcon className="size-2.5" />
+            {formatTokens(usage.inputTokens)} in
+          </span>
+          <span className="flex items-center gap-0.5">
+            <ArrowDownIcon className="size-2.5" />
+            {formatTokens(usage.outputTokens)} out
+          </span>
+        </p>
+      ) : null}
     </Message>
   );
+}
+
+function formatTokens(count: number): string {
+  if (count >= 10_000) return `${(count / 1000).toFixed(1)}k`;
+  return count.toLocaleString("en-US");
 }
 
 function AgentMessagePart({
@@ -104,8 +136,24 @@ function AgentMessagePart({
       );
     case "reasoning":
       return (
-        <Reasoning defaultOpen isStreaming={part.state === "streaming"}>
-          <ReasoningTrigger />
+        <Reasoning
+          defaultOpen={part.state === "streaming"}
+          isStreaming={part.state === "streaming"}
+        >
+          <ReasoningTrigger
+            getThinkingMessage={(isStreaming, duration) =>
+              isStreaming || duration === 0 ? (
+                <Shimmer className="text-xs" duration={1.5}>
+                  Thinking…
+                </Shimmer>
+              ) : (
+                <span className="text-xs">
+                  Thinking
+                  {duration === undefined ? "" : ` · ${duration}s`}
+                </span>
+              )
+            }
+          />
           <ReasoningContent>{part.text}</ReasoningContent>
         </Reasoning>
       );
@@ -159,12 +207,12 @@ function AuthorizationPrompt({
   return (
     <div
       className={cn(
-        "space-y-3 rounded-md border p-3",
+        "space-y-3 rounded-lg border p-3",
         isAuthorized
-          ? "border-emerald-500/30 bg-emerald-500/5"
+          ? "border-ok/30 bg-ok/5"
           : isCompleted
-            ? "border-destructive/30 bg-destructive/5"
-            : "border-blue-500/30 bg-blue-500/5",
+            ? "border-danger/30 bg-danger/5"
+            : "border-warn/40 bg-warn/5",
       )}
     >
       <div className="flex items-start gap-3">
@@ -172,10 +220,10 @@ function AuthorizationPrompt({
           className={cn(
             "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full",
             isAuthorized
-              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+              ? "bg-ok/10 text-ok"
               : isCompleted
-                ? "bg-destructive/10 text-destructive"
-                : "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+                ? "bg-danger/10 text-danger"
+                : "bg-warn/10 text-warn",
           )}
         >
           <Icon className="size-4" />
@@ -191,7 +239,7 @@ function AuthorizationPrompt({
           {part.state === "required" && part.authorization?.userCode ? (
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span className="text-muted-foreground">Code</span>
-              <code className="rounded-md bg-background px-2 py-1 font-mono">
+              <code className="rounded-md border bg-background px-2 py-1 font-mono">
                 {part.authorization.userCode}
               </code>
             </div>
@@ -268,8 +316,13 @@ function InputRequestActions({
   );
 
   return (
-    <div className="space-y-3 rounded-md border border-yellow-500/30 bg-yellow-500/5 p-3">
-      <p className="text-muted-foreground text-sm">{inputRequest.prompt}</p>
+    <div className="space-y-3 rounded-lg border border-warn/40 bg-warn/5 p-3">
+      <p className="text-sm">
+        <span className="mr-2 rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-medium font-mono text-[10px] text-warn uppercase">
+          input needed
+        </span>
+        {inputRequest.prompt}
+      </p>
       {inputResponse ? (
         <p className="font-medium text-sm">
           Responded:{" "}

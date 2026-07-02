@@ -1,8 +1,8 @@
+import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangleIcon,
   BrainIcon,
   CalendarClockIcon,
-  KeyRoundIcon,
   PlugZapIcon,
   RadioTowerIcon,
   ScrollTextIcon,
@@ -10,27 +10,11 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  ContextWindowMeter,
+  CopyButton,
+  ToolsTable,
+} from "@/app/_components/diagnostics-client";
 import type { AgentEntry } from "@/lib/agents";
 import { diagnosticCount, fetchAgentInfo } from "@/lib/info";
 
@@ -48,7 +32,7 @@ export async function DiagnosticsPanel({
   if (!result.ok) {
     if (result.kind === "unauthorized") {
       return (
-        <ErrorCard title="The agent rejected the playground's credentials">
+        <ErrorCallout title="The agent rejected the playground's credentials">
           <p>
             <code className="font-mono">/eve/v1/info</code> is auth-gated by the
             agent's eve channel and it answered with a 401/403 ({result.detail}
@@ -77,19 +61,16 @@ export async function DiagnosticsPanel({
               stack.
             </p>
           )}
-        </ErrorCard>
+        </ErrorCallout>
       );
     }
+    if (result.kind === "unreachable") {
+      return <UnreachableCallout agent={agent} detail={result.detail} />;
+    }
     return (
-      <ErrorCard
-        title={
-          result.kind === "unreachable"
-            ? "Agent unreachable"
-            : "Could not load diagnostics"
-        }
-      >
+      <ErrorCallout title="Could not load diagnostics">
         <p>{result.detail}</p>
-      </ErrorCard>
+      </ErrorCallout>
     );
   }
 
@@ -117,253 +98,234 @@ export async function DiagnosticsPanel({
   const instructions = info.instructions?.static?.markdown;
 
   return (
-    <div className="flex flex-col gap-4 pb-8">
+    <div className="flex flex-col gap-3 pb-8">
       {errorCount > 0 || warningCount > 0 ? (
-        <Card className="border-amber-500/40 bg-amber-500/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <AlertTriangleIcon className="size-4 text-amber-600 dark:text-amber-300" />
-              Discovery problems
-            </CardTitle>
-            <CardDescription>
-              {errorCount} discovery error{errorCount === 1 ? "" : "s"},{" "}
-              {warningCount} warning{warningCount === 1 ? "" : "s"} reported by
-              eve. Run <code className="font-mono">eve info</code> in the
-              agent's app for details.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <div
+          className={
+            errorCount > 0
+              ? "rounded-lg border border-danger/40 bg-danger/5 px-4 py-3"
+              : "rounded-lg border border-warn/40 bg-warn/5 px-4 py-3"
+          }
+        >
+          <p
+            className={
+              errorCount > 0
+                ? "flex items-center gap-2 font-medium text-danger text-sm"
+                : "flex items-center gap-2 font-medium text-sm text-warn"
+            }
+          >
+            <AlertTriangleIcon className="size-4" />
+            Discovery problems
+          </p>
+          <p className="mt-1 text-muted-foreground text-xs">
+            {errorCount} discovery error{errorCount === 1 ? "" : "s"},{" "}
+            {warningCount} warning{warningCount === 1 ? "" : "s"} reported by
+            eve. Run <code className="font-mono">eve info</code> in the agent's
+            app for details.
+          </p>
+        </div>
       ) : null}
 
-      <Card data-testid="diagnostics-model">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <BrainIcon className="size-4 text-muted-foreground" />
-            Model
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Fact label="Id" value={model?.id ?? "unknown"} mono />
-          <Fact
-            label="Context window"
-            value={
-              model?.contextWindowTokens
-                ? `${model.contextWindowTokens.toLocaleString("en-US")} tokens`
-                : "unknown"
-            }
-          />
-          <Fact
-            label="Routing"
-            value={
-              model?.routing
-                ? `${model.routing.kind ?? "?"} → ${model.routing.target ?? model.routing.provider ?? "?"}`
-                : "unknown"
-            }
-            mono
-          />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <Panel
+          className="lg:col-span-2"
+          icon={BrainIcon}
+          testId="diagnostics-model"
+          title="Model"
+        >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Fact label="Id" mono value={model?.id ?? "unknown"} />
+            <Fact
+              label="Routing"
+              mono
+              value={
+                model?.routing
+                  ? `${model.routing.kind ?? "?"} → ${model.routing.target ?? model.routing.provider ?? "?"}`
+                  : "unknown"
+              }
+            />
+            {info.mode ? <Fact label="Mode" mono value={info.mode} /> : null}
+          </div>
+          <div className="mt-4 border-t pt-3">
+            <p className="mb-2 font-medium text-[11px] text-muted-foreground uppercase tracking-wider">
+              Context window
+            </p>
+            <ContextWindowMeter windowTokens={model?.contextWindowTokens} />
+          </div>
+        </Panel>
 
-      <Card data-testid="diagnostics-tools">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <WrenchIcon className="size-4 text-muted-foreground" />
-            Tools
-            <Badge variant="secondary">{tools.length}</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <Panel
+          className="lg:col-span-2"
+          count={tools.length}
+          icon={WrenchIcon}
+          testId="diagnostics-tools"
+          title="Tools"
+        >
           {tools.length === 0 ? (
             <Empty>No tools available.</Empty>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Origin</TableHead>
-                  <TableHead>Approval</TableHead>
-                  <TableHead>Description</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tools.map((tool) => (
-                  <TableRow key={tool.name}>
-                    <TableCell className="font-mono text-xs">
-                      {tool.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {tool.origin ?? "unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {tool.requiresApproval ? (
-                        <Badge className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300">
-                          required
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground text-xs">
-                          none
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="max-w-md text-muted-foreground text-xs">
-                      {tool.description}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <ToolsTable
+              tools={tools.map((tool) => ({
+                description: tool.description,
+                name: tool.name,
+                origin: tool.origin,
+                requiresApproval: tool.requiresApproval,
+              }))}
+            />
           )}
-        </CardContent>
-      </Card>
+        </Panel>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <SparklesIcon className="size-4 text-muted-foreground" />
-              Skills
-              <Badge variant="secondary">{skills.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {skills.length === 0 ? (
-              <Empty>No static skills.</Empty>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {skills.map((skill) => (
-                  <li key={skill.logicalPath}>
-                    <p className="font-mono text-xs">{skill.logicalPath}</p>
-                    {skill.description ? (
-                      <p className="mt-0.5 text-muted-foreground text-xs">
-                        {skill.description}
-                      </p>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+        <Panel count={skills.length} icon={SparklesIcon} title="Skills">
+          {skills.length === 0 ? (
+            <Empty>No static skills.</Empty>
+          ) : (
+            <ul className="flex flex-col gap-2.5">
+              {skills.map((skill) => (
+                <li key={skill.logicalPath}>
+                  <p className="font-mono text-xs">{skill.logicalPath}</p>
+                  {skill.description ? (
+                    <p className="mt-0.5 text-muted-foreground text-xs">
+                      {skill.description}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <RadioTowerIcon className="size-4 text-muted-foreground" />
-              Channels
-              <Badge variant="secondary">{channels.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {channels.length === 0 ? (
-              <Empty>No channels.</Empty>
-            ) : (
-              <ul className="flex flex-col gap-1.5">
-                {channels.map((channel) => (
-                  <li
-                    className="flex items-center gap-2 font-mono text-xs"
-                    key={`${channel.origin}:${channel.method}:${channel.urlPath}`}
-                  >
-                    <Badge className="w-12 justify-center" variant="outline">
-                      {channel.method ?? "?"}
-                    </Badge>
-                    <span className="truncate">{channel.urlPath}</span>
-                    <span className="ml-auto text-muted-foreground">
-                      {channel.name ?? channel.origin}
+        <Panel count={channels.length} icon={RadioTowerIcon} title="Channels">
+          {channels.length === 0 ? (
+            <Empty>No channels.</Empty>
+          ) : (
+            <ul className="flex flex-col gap-1.5">
+              {channels.map((channel) => (
+                <li
+                  className="flex items-center gap-2 font-mono text-xs"
+                  key={`${channel.origin}:${channel.method}:${channel.urlPath}`}
+                >
+                  <span className="w-12 shrink-0 rounded border bg-muted/60 px-1 py-px text-center text-[10px] text-muted-foreground">
+                    {channel.method ?? "?"}
+                  </span>
+                  <span className="truncate">{channel.urlPath}</span>
+                  <span className="ml-auto truncate pl-2 text-muted-foreground">
+                    {channel.name ?? channel.origin}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel
+          count={schedules.length}
+          icon={CalendarClockIcon}
+          title="Schedules"
+        >
+          {schedules.length === 0 ? (
+            <Empty>No schedules.</Empty>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {schedules.map((schedule) => (
+                <li
+                  className="flex items-center gap-2 text-xs"
+                  key={schedule.logicalPath}
+                >
+                  <span className="font-mono">{schedule.logicalPath}</span>
+                  {schedule.cron ? (
+                    <span className="rounded border bg-muted/60 px-1.5 py-px font-mono text-[10px] text-muted-foreground">
+                      {schedule.cron}
                     </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CalendarClockIcon className="size-4 text-muted-foreground" />
-              Schedules
-              <Badge variant="secondary">{schedules.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {schedules.length === 0 ? (
-              <Empty>No schedules.</Empty>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {schedules.map((schedule) => (
-                  <li className="text-xs" key={schedule.logicalPath}>
-                    <span className="font-mono">{schedule.logicalPath}</span>
-                    {schedule.cron ? (
-                      <Badge className="ml-2 font-mono" variant="outline">
-                        {schedule.cron}
-                      </Badge>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+        <Panel
+          count={connections.length}
+          icon={PlugZapIcon}
+          title="Connections"
+        >
+          {connections.length === 0 ? (
+            <Empty>No connections.</Empty>
+          ) : (
+            <ul className="flex flex-col gap-1.5">
+              {connections.map((connection, index) => (
+                <li
+                  className="font-mono text-xs"
+                  key={connection.name ?? `connection-${index}`}
+                >
+                  {connection.name ?? "unnamed"}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <PlugZapIcon className="size-4 text-muted-foreground" />
-              Connections
-              <Badge variant="secondary">{connections.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {connections.length === 0 ? (
-              <Empty>No connections.</Empty>
-            ) : (
-              <ul className="flex flex-col gap-1.5">
-                {connections.map((connection, index) => (
-                  <li
-                    className="font-mono text-xs"
-                    key={connection.name ?? `connection-${index}`}
-                  >
-                    {connection.name ?? "unnamed"}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <ScrollTextIcon className="size-4 text-muted-foreground" />
-            Instructions
-          </CardTitle>
-          <CardDescription>
-            The agent's always-on system prompt (static sources).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <Panel
+          className="lg:col-span-2"
+          icon={ScrollTextIcon}
+          title="Instructions"
+        >
           {instructions ? (
-            <Collapsible>
-              <CollapsibleTrigger className="flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground">
-                <KeyRoundIcon className="size-3.5" />
-                Show full instructions (
-                {instructions.length.toLocaleString("en-US")} chars)
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <pre className="mt-3 max-h-[32rem] overflow-y-auto whitespace-pre-wrap rounded-md bg-muted p-3 font-mono text-xs">
-                  {instructions}
-                </pre>
-              </CollapsibleContent>
-            </Collapsible>
+            <div className="relative rounded-md border bg-background">
+              <div className="flex items-center justify-between border-b px-3 py-1.5">
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  static system prompt ·{" "}
+                  {instructions.length.toLocaleString("en-US")} chars
+                </span>
+                <CopyButton label="Copy instructions" text={instructions} />
+              </div>
+              <pre className="max-h-80 overflow-y-auto whitespace-pre-wrap p-3 font-mono text-xs leading-5">
+                {instructions}
+              </pre>
+            </div>
           ) : (
             <Empty>No static instructions reported.</Empty>
           )}
-        </CardContent>
-      </Card>
+        </Panel>
+      </div>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Building blocks                                                    */
+/* ------------------------------------------------------------------ */
+
+function Panel({
+  children,
+  className,
+  count,
+  icon: Icon,
+  testId,
+  title,
+}: {
+  readonly children: ReactNode;
+  readonly className?: string;
+  readonly count?: number;
+  readonly icon: LucideIcon;
+  readonly testId?: string;
+  readonly title: string;
+}) {
+  return (
+    <section
+      className={`rounded-lg border bg-card ${className ?? ""}`}
+      data-testid={testId}
+    >
+      <header className="flex items-center gap-2 border-b px-4 py-2.5">
+        <Icon className="size-3.5 text-muted-foreground" />
+        <h2 className="font-medium text-sm">{title}</h2>
+        {count !== undefined ? (
+          <span className="rounded bg-muted px-1.5 py-px font-mono text-[10px] text-muted-foreground tabular-nums">
+            {count}
+          </span>
+        ) : null}
+      </header>
+      <div className="px-4 py-3">{children}</div>
+    </section>
   );
 }
 
@@ -378,10 +340,12 @@ function Fact({
 }) {
   return (
     <div>
-      <p className="text-muted-foreground text-xs uppercase tracking-wide">
+      <p className="font-medium text-[11px] text-muted-foreground uppercase tracking-wider">
         {label}
       </p>
-      <p className={`mt-1 text-sm ${mono ? "font-mono" : ""}`}>{value}</p>
+      <p className={`mt-1 text-sm ${mono ? "font-mono text-[13px]" : ""}`}>
+        {value}
+      </p>
     </div>
   );
 }
@@ -390,7 +354,7 @@ function Empty({ children }: { readonly children: ReactNode }) {
   return <p className="text-muted-foreground text-sm">{children}</p>;
 }
 
-function ErrorCard({
+function ErrorCallout({
   title,
   children,
 }: {
@@ -398,16 +362,46 @@ function ErrorCard({
   readonly children: ReactNode;
 }) {
   return (
-    <Card className="border-destructive/40 bg-destructive/5">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <AlertTriangleIcon className="size-4 text-destructive" />
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 text-muted-foreground text-sm">
+    <div className="rounded-lg border border-danger/40 bg-danger/5 p-4">
+      <p className="flex items-center gap-2 font-medium text-danger text-sm">
+        <AlertTriangleIcon className="size-4" />
+        {title}
+      </p>
+      <div className="mt-2 flex flex-col gap-2 text-muted-foreground text-sm">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  );
+}
+
+function UnreachableCallout({
+  agent,
+  detail,
+}: {
+  readonly agent: AgentEntry;
+  readonly detail: string;
+}) {
+  const isLocal = agent.target.kind === "local";
+  return (
+    <ErrorCallout title="Agent unreachable">
+      <p>{detail}</p>
+      {isLocal && agent.target.kind === "local" ? (
+        <>
+          <p>
+            Is <code className="font-mono">{agent.id}</code> running on port{" "}
+            <code className="font-mono">{agent.target.port}</code>? Start every
+            registered agent (plus this UI) with:
+          </p>
+          <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-3 py-2">
+            <code className="font-mono text-foreground text-xs">
+              pnpm playground:dev
+            </code>
+            <CopyButton label="Copy command" text="pnpm playground:dev" />
+          </div>
+        </>
+      ) : (
+        <p>Check that the remote URL is correct and the deployment is up.</p>
+      )}
+    </ErrorCallout>
   );
 }
