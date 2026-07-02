@@ -13,6 +13,41 @@ catalog:
   typescript: 7.0.1-rc
   vitest: ^4.1.9
   zod: 4.4.3
+  # --- apps/playground (Next.js control-plane) --------------------------------
+  # Exact pins mirror the eve 0.18 web scaffold (its vendored AI Elements
+  # components are written against these); ranged entries follow the stack's
+  # current stable line.
+  "@radix-ui/react-use-controllable-state": 1.2.2
+  "@streamdown/cjk": 1.0.3
+  "@streamdown/code": 1.1.1
+  "@streamdown/math": 1.0.2
+  "@streamdown/mermaid": 1.0.2
+  "@tailwindcss/postcss": ^4.3.2
+  "@types/react": ^19.2.15
+  "@types/react-dom": ^19.2.3
+  class-variance-authority: 0.7.1
+  clsx: 2.1.1
+  cmdk: 1.1.1
+  lucide-react: 1.16.0
+  motion: 12.40.0
+  nanoid: 5.1.11
+  next: ^16.2.10
+  radix-ui: 1.4.3
+  react: ^19.2.7
+  react-dom: ^19.2.7
+  shiki: 4.1.0
+  streamdown: 2.5.0
+  tailwind-merge: 3.6.0
+  tailwindcss: ^4.3.2
+  use-stick-to-bottom: 1.1.4
+
+# Named catalogs for pinned exceptions to the default catalog.
+catalogs:
+  # apps/playground only: `next build` typechecks through TypeScript's JS API,
+  # which the Go-based typescript 7.x-rc (default catalog) does not ship, so
+  # the Next app stays on the 6.x line until Next supports tsgo.
+  typescript6:
+    typescript: 6.0.3
 
 # Matches the exclusions the eve 0.18 scaffold generates.
 minimumReleaseAgeExclude:

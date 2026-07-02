@@ -19,6 +19,8 @@
     "info": "turbo run info",
     "knip": "knip --no-config-hints",
     "lint": "turbo run lint",
+    "playground:agents": "node scripts/playground-agents.mjs",
+    "playground:dev": "node scripts/playground-dev.mjs",
     "smoke": "node scripts/smoke.mjs",
     "start": "turbo run start",
     "test": "turbo run test",

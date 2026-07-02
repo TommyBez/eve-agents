@@ -24,6 +24,7 @@ pnpm agent:add @evex/code-reviewer
 
 # 3. Run it
 pnpm --filter <name> dev    # interactive TUI REPL against the real runtime
+pnpm playground:dev --mock  # …or chat with every registered agent in the browser, no keys needed (docs/playground.md)
 
 # 4. Verify everything
 pnpm verify          # lint + typecheck + build + test + deterministic evals — no secrets needed

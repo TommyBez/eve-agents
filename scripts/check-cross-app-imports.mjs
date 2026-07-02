@@ -37,6 +37,7 @@ const SKIP_DIRS = new Set([
   ".vercel",
   ".turbo",
   ".workflow-data",
+  ".next",
   "dist",
 ]);
 

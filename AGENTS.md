@@ -5,6 +5,7 @@ Turborepo monorepo of [eve](https://www.npmjs.com/package/eve)-framework agents.
 ## Repo map
 
 - `apps/<name>/` — one eve agent per app. `apps/code-reviewer/` is the exemplar; new apps must mirror its shape.
+- `apps/playground/` — the playground UI (Next.js): chat, diagnostics, and events for every agent registered in `apps/playground/agents.config.json`. The one non-agent app, and the sanctioned exception to rule 4; manage its registry with `pnpm playground:agents` (see `docs/playground.md`).
 - `packages/typescript-config/` — shared tsconfig (`@repo/typescript-config`). Other shared code follows the same internal-package pattern.
 - `turbo/generators/` — the `pnpm agent:new` scaffolder and its templates.
 - `docs/` — executable playbooks (see Playbooks below).
@@ -17,6 +18,7 @@ pnpm agent:new                     # scaffold a new agent (turbo gen agent) — 
 pnpm agent:add @evex/<item>        # scaffold from the evex.sh registry (agent:new + overlay; see docs/adding-an-agent.md)
 pnpm verify                        # lint + typecheck + build + test + eval:ci — run before finishing ANY task
 pnpm --filter <app> dev            # run one agent's TUI REPL
+pnpm playground:dev                # run every playground-registered agent + the playground UI (--mock: no keys)
 pnpm --filter <app> eval           # run one agent's evals (all tiers)
 pnpm --filter <app> test           # run one agent's unit tests
 ```

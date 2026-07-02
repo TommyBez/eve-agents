@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { PlopTypes } from "@turbo/gen";
@@ -41,6 +42,53 @@ const SURFACE_FILES: Record<
   scheduled: [["agent/schedules/example.ts", "agent/schedules/example.ts.hbs"]],
 };
 
+function playgroundConfigPath(plop: PlopTypes.NodePlopAPI): string {
+  return path.join(
+    plop.getDestBasePath(),
+    "apps",
+    "playground",
+    "agents.config.json",
+  );
+}
+
+/**
+ * Registers the freshly scaffolded app with the playground by shelling out
+ * to scripts/playground-agents.mjs (`--port auto` = next free local port),
+ * then reads the assigned port back for the next-steps message.
+ */
+function registerWithPlayground(
+  plop: PlopTypes.NodePlopAPI,
+  name: string,
+): string[] {
+  const configPath = playgroundConfigPath(plop);
+  if (!fs.existsSync(configPath)) {
+    return [
+      "Playground: skipped registration — apps/playground/agents.config.json not found.",
+    ];
+  }
+  try {
+    execFileSync(
+      "node",
+      ["scripts/playground-agents.mjs", "add", name, "--port", "auto"],
+      { cwd: plop.getDestBasePath(), stdio: ["ignore", "pipe", "inherit"] },
+    );
+    const config = JSON.parse(fs.readFileSync(configPath, "utf8")) as {
+      agents?: Array<{ id: string; target?: { kind: string; port?: number } }>;
+    };
+    const entry = config.agents?.find((agent) => agent.id === name);
+    const port = entry?.target?.port;
+    return [
+      `Playground: registered as /agents/${name} (local port ${port}).`,
+      "  pnpm playground:dev   # start every registered agent + the playground UI",
+    ];
+  } catch {
+    return [
+      "Playground: registration failed — register manually with:",
+      `  pnpm playground:agents add ${name} --port auto`,
+    ];
+  }
+}
+
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
   // Handlebars equality helper for surface conditionals in templates.
   plop.setHelper("eq", (a: unknown, b: unknown) => a === b);
@@ -82,6 +130,22 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         message: "Primary surface:",
         choices: [...SURFACES],
       },
+      // The playground prompt only exists when the playground config does
+      // (plop cannot bypass conditional prompts, so it is included
+      // conditionally instead; the skipped case prints a note in the final
+      // action). Non-interactive: `--args <name> "<desc>" <surface>
+      // <true|false>` — plop maps positional args to prompts in order, so
+      // the optional 4th positional answers this prompt.
+      ...(fs.existsSync(playgroundConfigPath(plop))
+        ? [
+            {
+              type: "confirm",
+              name: "playground",
+              message: "Register this agent in the playground?",
+              default: true,
+            },
+          ]
+        : []),
     ],
     actions: (answers) => {
       const surface =
@@ -96,16 +160,32 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         }),
       );
 
-      // Final action: print next steps instead of mutating anything else.
+      // Final action: register with the playground (when confirmed) and
+      // print next steps. Registration reuses scripts/playground-agents.mjs
+      // — the single owner of the config format and port picking.
       actions.push((data) => {
-        const { name } = data as { name: string };
-        return [
+        const { name, playground } = data as {
+          name: string;
+          playground?: boolean | string;
+        };
+        const lines = [
           `Scaffolded apps/${name}. Next steps:`,
           "  pnpm install",
           `  pnpm --filter ${name} run dev       # local TUI (needs AI_GATEWAY_API_KEY)`,
           `  pnpm --filter ${name} run eval:ci   # deterministic evals — no keys needed`,
           `  pnpm --filter ${name} run test      # unit tests`,
-        ].join("\n");
+        ];
+        // `playground` is a boolean when prompted, a string under `--args`,
+        // and undefined when the prompt was skipped (no playground config).
+        if (playground === undefined) {
+          lines.push(
+            "",
+            "Playground: apps/playground/agents.config.json not found — skipped registration.",
+          );
+        } else if (playground === true || playground === "true") {
+          lines.push("", ...registerWithPlayground(plop, name));
+        }
+        return lines.join("\n");
       });
 
       return actions;

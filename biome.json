@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/.eve", "!**/.output", "!**/.vercel"]
+    "includes": ["**", "!**/.eve", "!**/.next", "!**/.output", "!**/.vercel"]
   },
   "formatter": {
     "enabled": true,
@@ -17,6 +17,11 @@
     "enabled": true,
     "rules": {
       "preset": "recommended"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "javascript": {

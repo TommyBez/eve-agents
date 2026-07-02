@@ -13,6 +13,16 @@
         "turbo/generators/config.ts"
       ]
     },
+    "apps/playground": {
+      // Next.js app (not an eve agent) — knip's Next plugin autodetects the
+      // app-router entries (pages, layouts, route handlers).
+      "entry": [
+        // Vendored UI kit (AI Elements + shadcn primitives copied from the
+        // eve 0.18 web scaffold): treated as entry points so their unused
+        // exports are not flagged, while their dependency usage still counts.
+        "components/**/*.tsx"
+      ]
+    },
     "apps/*": {
       // Eve discovers these by filesystem convention — there is no classic
       // "main" that imports them, so knip must treat each as an entry point.
@@ -44,8 +54,12 @@
     "packages/typescript-config": {
       // JSON-only config package (base.json consumed via tsconfig "extends").
       // No js/ts source to analyze; declare it empty so nothing is flagged.
+      // knip parses nextjs.json as a tsconfig and reports its
+      // `plugins: [{ "name": "next" }]` entry as an unresolved import; next
+      // is a dependency of the consuming app, not of this JSON-only package.
       "entry": [],
-      "project": []
+      "project": [],
+      "ignoreUnresolved": ["next"]
     }
   }
 }

@@ -7,7 +7,7 @@ End-to-end playbook: scaffold, implement, run, test, verify, deploy. New agents 
 Instead of starting from the blank scaffold, install a published agent from the [evex.sh](https://evex.sh) registry:
 
 ```bash
-pnpm agent:add @evex/<item> [name] [--yes] [--no-env-prefix]
+pnpm agent:add @evex/<item> [name] [--yes] [--no-env-prefix] [--playground [port] | --no-playground]
 # e.g.
 pnpm agent:add @evex/x-hot-topic-digest
 pnpm agent:add postgres-data-analyst my-analyst   # bare names default to @evex
@@ -22,6 +22,7 @@ pnpm agent:add --from-file ./item.json            # offline/private registry-ite
 - **Auto env contract** — every env var the overlaid code reads but `.env.example` misses is appended under a `# From <item>` header, keeping `pnpm check:env-contract` green. Fill in real values before running live.
 - **Env-prefix enforcement (on by default)** — app-specific env vars in the item are renamed to the `<APP>_` prefix required by AGENTS.md rule 3, consistently across all overlaid files (code, `.env.example`, docs). Detected legacy prefixes are replaced rather than double-prefixed (`DATA_ANALYST_DATABASE_URL` → `POSTGRES_DATA_ANALYST_DATABASE_URL`); everything else gets the prefix prepended (`RESEND_API_KEY` → `X_HOT_TOPIC_DIGEST_RESEND_API_KEY`). Shared platform vars (`AI_GATEWAY_API_KEY`, `GITHUB_*`, `SLACK_*`, `LINEAR_*`, `KV_REST_API_*`, …) keep their canonical names. The summary prints an old → new rename table — use it when copying values into `.env.local`. Pass `--no-env-prefix` to keep the item's names as authored (e.g. when sharing an env with a deployment of the original item).
 - **Repo-convention fixes** — extensionless relative imports get `.js` added (nodenext resolution), unused exports are stripped (knip), and everything is Biome-formatted. It finishes by running lint + typecheck + eval:ci for the new app.
+- **Playground registration** — after verification succeeds, the app is registered with the playground (`apps/playground/agents.config.json`) so it gets a chat page at `/agents/<name>`. `--playground [port]` forces it (auto-picking a free port when `[port]` is omitted), `--no-playground` skips it; by default it asks, and `--yes` auto-registers. See [playground.md](./playground.md).
 
 **Heed the eve-version warning.** Registry items declare the eve version they were authored against (e.g. `eve@^0.15.1`). When that range does not overlap the workspace catalog's version, `agent:add` prints a prominent warning: the app still installs against the catalog version, but eve is pre-1.0 and APIs move — review the item's code against the bundled docs (`apps/<name>/node_modules/eve/docs/`) before shipping. The same warning applies to any other catalog-managed dependency (e.g. zod).
 
@@ -29,7 +30,7 @@ The item's own evals are installed untagged: they run with `pnpm --filter <name>
 
 ## 1. Scaffold
 
-Interactive (prompts for name, description, and primary surface):
+Interactive (prompts for name, description, primary surface, and whether to register the agent in the playground):
 
 ```bash
 pnpm agent:new
@@ -38,13 +39,14 @@ pnpm agent:new
 Non-interactive, for scripts and CI (`--args` passes answers positionally, in prompt order):
 
 ```bash
-pnpm agent:new -- --args <name> "<description>" <surface>
+pnpm agent:new -- --args <name> "<description>" <surface> [register-playground]
 # e.g.
-pnpm agent:new -- --args triage-bot "Triages inbound support issues" slack
+pnpm agent:new -- --args triage-bot "Triages inbound support issues" slack false
 ```
 
 - `<name>` is kebab-case (`triage-bot`); it becomes the package name, the directory `apps/<name>`, and the env prefix (`TRIAGE_BOT_*`).
 - `<surface>` is one of `http-only`, `slack`, `github`, `scheduled`.
+- `[register-playground]` (`true`/`false`) answers the "Register this agent in the playground?" prompt, which registers the app in `apps/playground/agents.config.json` on the next free port (via `pnpm playground:agents`) — see [playground.md](./playground.md). The prompt (and the positional) only exists when `apps/playground/agents.config.json` is present; otherwise the generator skips registration with a note.
 - The authoritative prompt list lives in `turbo/generators/config.ts` — check it if the answers above don't line up.
 
 Then wire the new app into the workspace and smoke-check it:

@@ -29,6 +29,11 @@
  *   8. Runs pnpm install, adds `@types/<pkg>` for merged deps that ship no
  *      type declarations, strips unused exports (knip --fix), then Biome
  *      auto-fix and lint + typecheck + eval:ci for the new app.
+ *   9. Registers the app with the playground (apps/playground) via
+ *      scripts/playground-agents.mjs: `--playground [port]` forces it
+ *      (auto-picking a free port when [port] is omitted), `--no-playground`
+ *      skips it, and by default it asks — auto-registering under --yes when
+ *      the playground config exists.
  *
  * Exit codes: 0 = success, 1 = expected failure (bad input, checks failed),
  * 2 = unexpected error.
@@ -49,6 +54,11 @@ import { parseArgs } from "node:util";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const APPS_DIR = path.join(ROOT, "apps");
+const PLAYGROUND_CONFIG_PATH = path.join(
+  APPS_DIR,
+  "playground",
+  "agents.config.json",
+);
 const FETCH_TIMEOUT_MS = 10_000;
 const KEBAB_CASE = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 
@@ -855,7 +865,98 @@ function usage() {
     "  --yes, -y        skip the confirmation prompt",
     "  --from-file      read the registry item JSON from a local file",
     "  --no-env-prefix  keep the item's env var names (skip <APP>_ prefix renames)",
+    "  --playground [port]  register the app with the playground (default port: auto)",
+    "  --no-playground  skip playground registration (default: ask; --yes registers)",
   ].join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Playground registration (delegates to scripts/playground-agents.mjs — the
+// single owner of the config format and port picking)
+
+/**
+ * `--playground [port]` takes an optional value, which node:util's parseArgs
+ * cannot express — extract the playground flags first and hand the rest to
+ * parseArgs. Returns { mode: "register" | "skip" | undefined, port, rest }.
+ */
+function extractPlaygroundFlags(argv) {
+  const rest = [];
+  let mode;
+  let port;
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--no-playground") {
+      mode = "skip";
+    } else if (arg === "--playground") {
+      mode = "register";
+      if (/^\d+$/.test(argv[i + 1] ?? "")) port = argv[++i];
+    } else if (arg.startsWith("--playground=")) {
+      mode = "register";
+      const value = arg.slice("--playground=".length);
+      if (/^\d+$/.test(value)) port = value;
+    } else {
+      rest.push(arg);
+    }
+  }
+  return { mode, port, rest };
+}
+
+/**
+ * Registers apps/<appName> with the playground (or explains why not).
+ * Never throws: a failed registration must not fail an installed app.
+ * Returns summary lines for the final report.
+ */
+async function registerWithPlayground(appName, { mode, port, yes }) {
+  const registerLater = `Register later with: pnpm playground:agents add ${appName} --port auto`;
+  if (mode === "skip") {
+    return [`Playground: skipped (--no-playground). ${registerLater}`];
+  }
+  if (!existsSync(PLAYGROUND_CONFIG_PATH)) {
+    return [
+      "Playground: skipped — apps/playground/agents.config.json not found." +
+        (mode === "register" ? ` ${registerLater}` : ""),
+    ];
+  }
+  if (mode === undefined) {
+    if (yes || !process.stdin.isTTY) {
+      // --yes (or no TTY, which required --yes earlier): default = register.
+    } else {
+      const rl = createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+      const answer = (
+        await rl.question(`Register ${appName} in the playground? [Y/n] `)
+      )
+        .trim()
+        .toLowerCase();
+      rl.close();
+      if (answer === "n" || answer === "no") {
+        return [`Playground: skipped (answered no). ${registerLater}`];
+      }
+    }
+  }
+  try {
+    execFileSync(
+      "node",
+      [
+        path.join(ROOT, "scripts", "playground-agents.mjs"),
+        "add",
+        appName,
+        "--port",
+        port ?? "auto",
+      ],
+      { cwd: ROOT, stdio: ["ignore", "pipe", "inherit"] },
+    );
+    const config = JSON.parse(readFileSync(PLAYGROUND_CONFIG_PATH, "utf8"));
+    const entry = config.agents?.find((agent) => agent?.id === appName);
+    const assigned = entry?.target?.port;
+    return [
+      `Playground: registered at /agents/${appName} (local port ${assigned}) — run \`pnpm playground:dev\`.`,
+    ];
+  } catch {
+    return [`Playground: registration FAILED. ${registerLater}`];
+  }
 }
 
 async function loadItem(values, positionals) {
@@ -905,8 +1006,10 @@ async function confirm(item, appName) {
 }
 
 async function main() {
+  const playground = extractPlaygroundFlags(process.argv.slice(2));
   const { values, positionals } = parseArgs({
     allowPositionals: true,
+    args: playground.rest,
     options: {
       "from-file": { type: "string" },
       "no-env-prefix": { type: "boolean" },
@@ -939,6 +1042,9 @@ async function main() {
     (item.description ?? item.title ?? appName).replace(/["\\]/g, "").trim() ||
     appName;
   console.log(`\n[1/7] Scaffolding apps/${appName} (turbo gen agent)...`);
+  // The generator's playground prompt only exists when the playground config
+  // does; when it does, answer "false" via the 4th positional — agent:add
+  // handles registration itself (after verification, below).
   run("pnpm", [
     "exec",
     "turbo",
@@ -948,6 +1054,7 @@ async function main() {
     appName,
     description,
     "http-only",
+    ...(existsSync(PLAYGROUND_CONFIG_PATH) ? ["false"] : []),
   ]);
 
   // 2. Overlay the registry files (registry wins, protected files excepted).
@@ -1086,6 +1193,16 @@ async function main() {
     );
   }
 
+  // Playground registration (after verification so only working apps are
+  // registered; a registration failure never fails the install).
+  console.log("\nPlayground registration...");
+  const playgroundSummary = await registerWithPlayground(appName, {
+    mode: playground.mode,
+    port: playground.port,
+    yes: values.yes,
+  });
+  for (const line of playgroundSummary) console.log(`  ${line}`);
+
   // Summary.
   console.log(
     [
@@ -1130,6 +1247,8 @@ async function main() {
             "(see the warning above).",
           ]
         : []),
+      "",
+      ...playgroundSummary,
       "",
       "Next steps:",
       `  cp apps/${appName}/.env.example apps/${appName}/.env.local   # then fill in values`,
