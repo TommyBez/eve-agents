@@ -7,7 +7,7 @@ End-to-end playbook: scaffold, implement, run, test, verify, deploy. New agents 
 Instead of starting from the blank scaffold, install a published agent from the [evex.sh](https://evex.sh) registry:
 
 ```bash
-pnpm agent:add @evex/<item> [name] [--yes]
+pnpm agent:add @evex/<item> [name] [--yes] [--no-env-prefix]
 # e.g.
 pnpm agent:add @evex/x-hot-topic-digest
 pnpm agent:add postgres-data-analyst my-analyst   # bare names default to @evex
@@ -20,6 +20,7 @@ pnpm agent:add --from-file ./item.json            # offline/private registry-ite
 - **Dependency mapping** — the item's dependencies are merged into the app's `package.json`: packages managed by the pnpm catalog become `"catalog:"`, everything else keeps the item's range (app-specific deps are fine, per `docs/conventions.md`). Untyped deps get a matching `@types/<pkg>` devDependency when one exists.
 - **evalModel rewiring** — registry items ship a plain `model: "provider/model"`; `agent:add` rewrites it to the `evalModel({ mock, production })` pattern from `apps/code-reviewer/agent/agent.ts` so the `ci`-tagged smoke eval (and `pnpm verify`) stays deterministic and secret-free. If no safe `model:` anchor is found, the scaffold's already-wired `agent.ts` is kept and the registry version is saved as `agent/agent.ts.registry` with a printed TODO for manual merging.
 - **Auto env contract** — every env var the overlaid code reads but `.env.example` misses is appended under a `# From <item>` header, keeping `pnpm check:env-contract` green. Fill in real values before running live.
+- **Env-prefix enforcement (on by default)** — app-specific env vars in the item are renamed to the `<APP>_` prefix required by AGENTS.md rule 3, consistently across all overlaid files (code, `.env.example`, docs). Detected legacy prefixes are replaced rather than double-prefixed (`DATA_ANALYST_DATABASE_URL` → `POSTGRES_DATA_ANALYST_DATABASE_URL`); everything else gets the prefix prepended (`RESEND_API_KEY` → `X_HOT_TOPIC_DIGEST_RESEND_API_KEY`). Shared platform vars (`AI_GATEWAY_API_KEY`, `GITHUB_*`, `SLACK_*`, `LINEAR_*`, `KV_REST_API_*`, …) keep their canonical names. The summary prints an old → new rename table — use it when copying values into `.env.local`. Pass `--no-env-prefix` to keep the item's names as authored (e.g. when sharing an env with a deployment of the original item).
 - **Repo-convention fixes** — extensionless relative imports get `.js` added (nodenext resolution), unused exports are stripped (knip), and everything is Biome-formatted. It finishes by running lint + typecheck + eval:ci for the new app.
 
 **Heed the eve-version warning.** Registry items declare the eve version they were authored against (e.g. `eve@^0.15.1`). When that range does not overlap the workspace catalog's version, `agent:add` prints a prominent warning: the app still installs against the catalog version, but eve is pre-1.0 and APIs move — review the item's code against the bundled docs (`apps/<name>/node_modules/eve/docs/`) before shipping. The same warning applies to any other catalog-managed dependency (e.g. zod).

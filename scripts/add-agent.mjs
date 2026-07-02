@@ -2,8 +2,8 @@
 /**
  * Scaffold a new app from a registry-published eve agent.
  *
- *   pnpm agent:add <spec> [name] [--yes]
- *   pnpm agent:add --from-file <path> [name] [--yes]
+ *   pnpm agent:add <spec> [name] [--yes] [--no-env-prefix]
+ *   pnpm agent:add --from-file <path> [name] [--yes] [--no-env-prefix]
  *
  * <spec> is `@evex/<item>`, a bare `<item>` (defaults to the @evex registry),
  * or a full registry-item URL. `--from-file` reads the item JSON from disk
@@ -16,13 +16,17 @@
  *      collisions, except package.json/tsconfig.json/turbo.json), adding
  *      `.js` to extensionless relative imports (this repo resolves modules
  *      with nodenext; some registry items were authored bundler-style).
- *   4. Merges the item's dependencies (catalog-managed packages stay
+ *   4. Renames app-specific env vars to the `<APP>_` prefix (AGENTS.md hard
+ *      rule 3) across the overlaid files, replacing detected legacy prefixes
+ *      instead of double-prefixing. Shared platform vars are never renamed;
+ *      opt out entirely with --no-env-prefix.
+ *   5. Merges the item's dependencies (catalog-managed packages stay
  *      `catalog:`; version-drift against the catalog is warned about).
- *   5. Rewires the overlaid agent.ts model through @repo/eval-fixtures'
+ *   6. Rewires the overlaid agent.ts model through @repo/eval-fixtures'
  *      `evalModel` so the ci-tagged smoke eval stays deterministic.
- *   6. Appends any env vars the overlaid code reads (but .env.example does
+ *   7. Appends any env vars the overlaid code reads (but .env.example does
  *      not declare) so `pnpm check:env-contract` stays green.
- *   7. Runs pnpm install, adds `@types/<pkg>` for merged deps that ship no
+ *   8. Runs pnpm install, adds `@types/<pkg>` for merged deps that ship no
  *      type declarations, strips unused exports (knip --fix), then Biome
  *      auto-fix and lint + typecheck + eval:ci for the new app.
  *
@@ -278,6 +282,164 @@ function fixRelativeImportExtensions(files, appDir) {
     }
   }
   return fixed;
+}
+
+// ---------------------------------------------------------------------------
+// Env-prefix enforcement (AGENTS.md hard rule 3: app-specific env vars are
+// prefixed with the SCREAMING_SNAKE app name). Registry items rarely follow
+// this repo's convention, so nonconforming vars are renamed across the
+// overlaid files. Opt out with --no-env-prefix.
+
+/**
+ * Vars agent:add must never rename: shared platform credentials and vars the
+ * platform/toolchain injects keep their canonical names (AGENTS.md hard rule
+ * 3 lists the shared set). Entries ending in "*" match by prefix.
+ */
+const SHARED_ENV_VARS = [
+  // Vercel AI Gateway key — shared across every app in the fleet.
+  "AI_GATEWAY_API_KEY",
+  // eve runtime/eval switches (EVE_MOCK_MODEL, EVE_RECORD_FIXTURES, ...).
+  "EVE_*",
+  // Canonical GitHub App / Slack / Linear credentials.
+  "GITHUB_*",
+  "SLACK_*",
+  "LINEAR_*",
+  // Upstash Redis REST credentials as provisioned by Vercel marketplace.
+  "KV_REST_API_*",
+  // Injected by Vercel (VERCEL, VERCEL_ENV, VERCEL_OIDC_TOKEN, ...).
+  "VERCEL_*",
+  // Runtime/platform vars, never app-specific.
+  "NODE_ENV",
+  "CI",
+  "PORT",
+  "TURBO_*",
+];
+
+function isSharedEnvVar(name) {
+  return SHARED_ENV_VARS.some((entry) =>
+    entry.endsWith("*") ? name.startsWith(entry.slice(0, -1)) : name === entry,
+  );
+}
+
+/** kebab-case app name -> SCREAMING_SNAKE, e.g. "x-hot-topic-digest" -> "X_HOT_TOPIC_DIGEST". */
+function constantCase(name) {
+  return name.replace(/-/g, "_").toUpperCase();
+}
+
+/**
+ * Env vars referenced by the overlaid files: process.env reads (and zod
+ * schema keys when the item ships agent/lib/env.ts), plus the names declared
+ * in an overlaid .env.example — those are the item's env contract even when
+ * a var is documented but not yet read.
+ */
+function collectOverlayEnvVars(files, appDir) {
+  const vars = new Set();
+  for (const relative of files) {
+    const filePath = path.join(appDir, relative);
+    if (!existsSync(filePath)) continue;
+    const content = readFileSync(filePath, "utf8");
+    if (content.includes("\0")) continue; // binary — never scan or rename
+    if (relative === ".env.example") {
+      for (const rawLine of content.split("\n")) {
+        const match = /^([A-Z][A-Z0-9_]+)\s*=/.exec(rawLine.trim());
+        if (match) vars.add(match[1]);
+      }
+      continue;
+    }
+    if (!SOURCE_EXTENSIONS.has(path.extname(filePath))) continue;
+    for (const pattern of ENV_READ_PATTERNS) {
+      for (const match of content.matchAll(pattern)) vars.add(match[1]);
+    }
+    if (relative === path.join("agent", "lib", "env.ts")) {
+      for (const match of content.matchAll(ENV_SCHEMA_KEY_PATTERN)) {
+        vars.add(match[1]);
+      }
+    }
+  }
+  return vars;
+}
+
+/**
+ * Plans old -> new renames for app-specific vars that do not carry the
+ * `<APP>_` prefix. To avoid double-prefixing, a detected legacy prefix is
+ * REPLACED with the app prefix; legacy prefixes are (a) the constantCase item
+ * name and (b) any leading prefix of >= 2 SCREAMING tokens shared by >= 2 of
+ * the app-specific vars (e.g. DATA_ANALYST_). Everything else gets the app
+ * prefix PREPENDED verbatim.
+ */
+function planEnvPrefixRenames({ vars, appName, itemName }) {
+  const appPrefix = `${constantCase(appName)}_`;
+  const appSpecific = [...vars].filter((name) => !isSharedEnvVar(name)).sort();
+  const toRename = appSpecific.filter((name) => !name.startsWith(appPrefix));
+
+  const candidates = new Set();
+  const itemPrefix = `${constantCase(itemName)}_`;
+  if (itemPrefix !== appPrefix) candidates.add(itemPrefix);
+  const prefixCounts = new Map();
+  for (const name of appSpecific) {
+    const tokens = name.split("_");
+    // Leading prefixes of >= 2 tokens that still leave a non-empty suffix.
+    for (let i = 2; i < tokens.length; i++) {
+      const prefix = `${tokens.slice(0, i).join("_")}_`;
+      prefixCounts.set(prefix, (prefixCounts.get(prefix) ?? 0) + 1);
+    }
+  }
+  for (const [prefix, count] of prefixCounts) {
+    if (count >= 2 && prefix !== appPrefix) candidates.add(prefix);
+  }
+  // Candidate choice when several match a var: prefer the LONGEST candidate
+  // whose tokens are a contiguous fragment of the app prefix — that is the
+  // "same name, different casing/subset" case where replacement reads best
+  // (X_HOT_TOPIC_HANDLES -> X_HOT_TOPIC_DIGEST_HANDLES, DATA_ANALYST_URL ->
+  // POSTGRES_DATA_ANALYST_URL). Otherwise fall back to the SHORTEST match,
+  // which keeps the most of the original name.
+  const byLength = [...candidates].sort((a, b) => a.length - b.length);
+  const appTokens = appPrefix.split("_").filter(Boolean);
+  const isAppFragment = (prefix) => {
+    const tokens = prefix.split("_").filter(Boolean);
+    return appTokens.some(
+      (_, start) =>
+        tokens.length <= appTokens.length - start &&
+        tokens.every((token, i) => token === appTokens[start + i]),
+    );
+  };
+
+  const renames = new Map();
+  const taken = new Set(appSpecific.filter((name) => !toRename.includes(name)));
+  for (const name of toRename) {
+    const matching = byLength.filter(
+      (prefix) => name.startsWith(prefix) && name.length > prefix.length,
+    );
+    const legacy = matching.findLast(isAppFragment) ?? matching[0];
+    let next = legacy
+      ? appPrefix + name.slice(legacy.length)
+      : appPrefix + name;
+    if (taken.has(next)) next = appPrefix + name; // collision -> plain prepend
+    renames.set(name, next);
+    taken.add(next);
+  }
+  return renames;
+}
+
+/**
+ * Applies the renames as word-boundary replacements across the given app
+ * files (code, markdown, .env.example alike — env schema keys, reads, and
+ * error-message strings all rename consistently). SCREAMING_SNAKE names are
+ * single regex "words", so replacements never hit longer var names.
+ */
+function applyEnvRenames(renames, files, appDir) {
+  if (renames.size === 0) return;
+  for (const relative of files) {
+    const filePath = path.join(appDir, relative);
+    if (!existsSync(filePath)) continue;
+    const content = readFileSync(filePath, "utf8");
+    if (content.includes("\0")) continue; // binary — leave untouched
+    let next = content;
+    for (const [oldName, newName] of renames) {
+      next = next.replace(new RegExp(`\\b${oldName}\\b`, "g"), newName);
+    }
+    if (next !== content) writeFileSync(filePath, next);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -688,10 +850,11 @@ function usage() {
     "Usage: pnpm agent:add <spec> [name] [--yes]",
     "       pnpm agent:add --from-file <path> [name] [--yes]",
     "",
-    "  <spec>       @evex/<item>, <item> (defaults to @evex), or an item URL",
-    "  [name]       app name override (kebab-case; defaults to the item name)",
-    "  --yes, -y    skip the confirmation prompt",
-    "  --from-file  read the registry item JSON from a local file",
+    "  <spec>           @evex/<item>, <item> (defaults to @evex), or an item URL",
+    "  [name]           app name override (kebab-case; defaults to the item name)",
+    "  --yes, -y        skip the confirmation prompt",
+    "  --from-file      read the registry item JSON from a local file",
+    "  --no-env-prefix  keep the item's env var names (skip <APP>_ prefix renames)",
   ].join("\n");
 }
 
@@ -746,6 +909,7 @@ async function main() {
     allowPositionals: true,
     options: {
       "from-file": { type: "string" },
+      "no-env-prefix": { type: "boolean" },
       yes: { short: "y", type: "boolean" },
     },
   });
@@ -774,7 +938,7 @@ async function main() {
   const description =
     (item.description ?? item.title ?? appName).replace(/["\\]/g, "").trim() ||
     appName;
-  console.log(`\n[1/6] Scaffolding apps/${appName} (turbo gen agent)...`);
+  console.log(`\n[1/7] Scaffolding apps/${appName} (turbo gen agent)...`);
   run("pnpm", [
     "exec",
     "turbo",
@@ -787,7 +951,7 @@ async function main() {
   ]);
 
   // 2. Overlay the registry files (registry wins, protected files excepted).
-  console.log("\n[2/6] Overlaying registry files...");
+  console.log("\n[2/7] Overlaying registry files...");
   const overlay = overlayFiles(item, appDir);
   console.log(
     `  ${overlay.written.length} new file(s), ${overlay.overwritten.length} scaffold file(s) replaced.`,
@@ -813,14 +977,52 @@ async function main() {
     );
   }
 
-  // 3. Merge dependencies.
-  console.log("\n[3/6] Merging dependencies...");
+  // 3. Env-prefix enforcement over the overlaid files (plus .env.example and
+  // the agent.ts variants those steps produced). Scaffold-only files already
+  // follow the convention and are left alone.
+  console.log("\n[3/7] Enforcing the env-prefix convention...");
+  const overlaidFiles = [
+    ...new Set([
+      ...overlay.written,
+      ...overlay.overwritten,
+      ...(overlay.agentTsContent !== undefined
+        ? [path.join("agent", "agent.ts")]
+        : []),
+      ...(rewire.mode === "manual"
+        ? [path.join("agent", "agent.ts.registry")]
+        : []),
+      ".env.example",
+    ]),
+  ];
+  let envRenames = new Map();
+  if (values["no-env-prefix"]) {
+    console.log("  Skipped (--no-env-prefix): env var names kept as authored.");
+  } else {
+    envRenames = planEnvPrefixRenames({
+      appName,
+      itemName: item.name,
+      vars: collectOverlayEnvVars(overlaidFiles, appDir),
+    });
+    applyEnvRenames(envRenames, overlaidFiles, appDir);
+    if (envRenames.size === 0) {
+      console.log(
+        "  No renames needed — the item's env vars already conform (or are shared).",
+      );
+    } else {
+      for (const [oldName, newName] of envRenames) {
+        console.log(`  ${oldName} -> ${newName}`);
+      }
+    }
+  }
+
+  // 4. Merge dependencies.
+  console.log("\n[4/7] Merging dependencies...");
   const deps = mergeDependencies(item, appDir);
   for (const mapping of deps.mappings) console.log(`  ${mapping}`);
   for (const warning of deps.warnings) console.warn(`\n  WARNING: ${warning}`);
 
-  // 4. Env contract.
-  console.log("\n[4/6] Reconciling the env contract...");
+  // 5. Env contract.
+  console.log("\n[5/7] Reconciling the env contract...");
   const appendedVars = reconcileEnvContract(appDir, item.name);
   console.log(
     appendedVars.length > 0
@@ -828,8 +1030,8 @@ async function main() {
       : "  .env.example already declares every env var the app reads.",
   );
 
-  // 5. Install + format (registry content is not Biome-formatted).
-  console.log("\n[5/6] pnpm install + Biome auto-fix...");
+  // 6. Install + format (registry content is not Biome-formatted).
+  console.log("\n[6/7] pnpm install + Biome auto-fix...");
   run("pnpm", ["install"]);
   const typePackages = await addMissingTypePackages(appDir, deps.appSpecific);
   if (typePackages.length > 0) {
@@ -856,9 +1058,9 @@ async function main() {
     allowFailure: true, // unfixable diagnostics surface in the lint step below
   });
 
-  // 6. Fast verify for this app (build runs via eval:ci's task dependency).
+  // 7. Fast verify for this app (build runs via eval:ci's task dependency).
   console.log(
-    `\n[6/6] Verifying (lint + typecheck + eval:ci for ${appName})...`,
+    `\n[7/7] Verifying (lint + typecheck + eval:ci for ${appName})...`,
   );
   const verified = run(
     "pnpm",
@@ -890,6 +1092,25 @@ async function main() {
       "",
       `Installed "${item.title ?? item.name}" into apps/${appName}.`,
       "",
+      ...(values["no-env-prefix"]
+        ? [
+            "Env-prefix enforcement was skipped (--no-env-prefix); the item's env",
+            "var names were kept as authored.",
+            "",
+          ]
+        : envRenames.size > 0
+          ? [
+              `Env vars renamed to the ${constantCase(appName)}_ prefix (AGENTS.md rule 3):`,
+              ...[...envRenames].map(
+                ([oldName, newName]) => `  ${oldName} -> ${newName}`,
+              ),
+              "",
+            ]
+          : [
+              "No env vars were renamed — the item already follows the env-prefix",
+              "convention (or only reads shared platform vars).",
+              "",
+            ]),
       "Dependency mappings:",
       ...deps.mappings.map((mapping) => `  ${mapping}`),
       ...(deps.warnings.length > 0
