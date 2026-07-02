@@ -1,0 +1,40 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.0",
+  "private": true,
+  "description": "{{{description}}}",
+  "type": "module",
+  "imports": {
+    "#*": "./agent/*",
+    "#evals/*": "./evals/*"
+  },
+  "scripts": {
+    "build": "eve build",
+    "dev": "node ../../scripts/prune-eve-state.mjs && eve dev",
+    "eval": "node ../../scripts/prune-eve-state.mjs && eve eval",
+    "eval:ci": "node ../../scripts/prune-eve-state.mjs && EVE_MOCK_MODEL=1 eve eval --tag ci --strict",
+    "eval:record": "node ../../scripts/prune-eve-state.mjs && EVE_RECORD_FIXTURES=1 eve eval --tag recorded",
+    "info": "eve info",
+    "lint": "biome check .",
+    "start": "eve start",
+    "test": "vitest run",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@repo/eval-fixtures": "workspace:*",
+    "@vercel/connect": "catalog:",
+    "ai": "catalog:",
+    "eve": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

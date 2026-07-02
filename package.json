@@ -1,26 +1,38 @@
 {
-  "name": "eve-test",
+  "name": "eve-agents",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "agent:new": "node scripts/create-agent.mjs",
+    "agent:add": "node scripts/add-agent.mjs",
+    "agent:new": "turbo gen agent",
     "build": "turbo run build",
+    "check:env-contract": "node scripts/check-env-contract.mjs",
+    "check:imports": "node scripts/check-cross-app-imports.mjs",
+    "deploy:app": "node scripts/deploy.mjs",
     "dev": "turbo run dev",
+    "doctor": "node scripts/doctor.mjs",
     "eval": "turbo run eval",
+    "eval:ci": "turbo run eval:ci",
+    "format": "biome format --write .",
     "info": "turbo run info",
+    "knip": "knip --no-config-hints",
+    "lint": "turbo run lint",
+    "playground:agents": "node scripts/playground-agents.mjs",
+    "playground:dev": "node scripts/playground-dev.mjs",
+    "smoke": "node scripts/smoke.mjs",
     "start": "turbo run start",
-    "typecheck": "turbo run typecheck"
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "upgrade:eve": "node scripts/upgrade-eve.mjs",
+    "verify": "node scripts/check-cross-app-imports.mjs && node scripts/check-env-contract.mjs && knip --no-config-hints && turbo run lint typecheck build test eval:ci"
   },
   "devDependencies": {
-    "turbo": "^2.9.18"
-  },
-  "overrides": {
-    "ai": "7.0.0-beta.178"
-  },
-  "resolutions": {
-    "ai": "7.0.0-beta.178"
+    "@biomejs/biome": "catalog:",
+    "@turbo/gen": "^2.10.2",
+    "knip": "^6.23.0",
+    "turbo": "^2.10.2"
   },
   "engines": {
     "node": "24.x"

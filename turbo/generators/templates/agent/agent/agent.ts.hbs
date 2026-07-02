@@ -1,0 +1,26 @@
+import { evalModel, isEvalModelActive } from "@repo/eval-fixtures";
+import { defineAgent } from "eve";
+
+// ── Eval-model switch for deterministic evals ────────────────────────────────
+// `pnpm run eval:ci` sets EVE_MOCK_MODEL, which swaps the live model for a
+// deterministic fixture: recorded model responses replay from
+// evals/fixtures/recordings.json first, then the `mock` responder below
+// answers anything that was never recorded. `pnpm run eval:record` sets
+// EVE_RECORD_FIXTURES instead and records real model responses into that file
+// (or the mock's, when EVE_MOCK_MODEL is also set). Either way the eval run
+// still exercises the real eve runtime (boot, channel routing, tool wiring,
+// session protocol) without needing API keys. Everything else (`eve dev`,
+// `eve start`, live evals) uses the real model untouched.
+export default defineAgent({
+  model: evalModel({
+    mock: ({ lastUserMessage }) => `MOCK_REPLY: ${lastUserMessage}`,
+    production: "anthropic/claude-sonnet-5",
+  }),
+  // Fixture models are not in the AI Gateway catalog, so tell eve their
+  // context window size explicitly while one is active (compaction needs it).
+  ...(isEvalModelActive() ? { modelContextWindowTokens: 200_000 } : {}),
+  limits: {
+    // Cost guardrail: cap provider-reported input tokens per session.
+    maxInputTokensPerSession: 10_000_000,
+  },
+});

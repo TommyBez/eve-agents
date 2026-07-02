@@ -1,0 +1,50 @@
+{
+  "name": "playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "biome check .",
+    "start": "next start",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@radix-ui/react-use-controllable-state": "catalog:",
+    "@streamdown/cjk": "catalog:",
+    "@streamdown/code": "catalog:",
+    "@streamdown/math": "catalog:",
+    "@streamdown/mermaid": "catalog:",
+    "ai": "catalog:",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "cmdk": "catalog:",
+    "eve": "catalog:",
+    "lucide-react": "catalog:",
+    "motion": "catalog:",
+    "nanoid": "catalog:",
+    "next": "catalog:",
+    "radix-ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "shiki": "catalog:",
+    "streamdown": "catalog:",
+    "tailwind-merge": "catalog:",
+    "use-stick-to-bottom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:typescript6"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

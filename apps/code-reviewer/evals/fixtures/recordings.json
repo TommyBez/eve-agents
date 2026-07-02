@@ -1,0 +1,40 @@
+{
+  "94088e58db81": {
+    "messagePreview": "<github_context> repository: example/widget pull_request_number: 12 sender: maintainer head_sha: def456 </github_contex…",
+    "steps": [
+      {
+        "toolCalls": [
+          {
+            "input": {
+              "command": "find /workspace -iname \"db.ts\" 2>/dev/null; echo done"
+            },
+            "name": "bash"
+          }
+        ]
+      },
+      {
+        "text": "No local file exists—only the diff context was provided. That's sufficient to assess this change.",
+        "toolCalls": [
+          {
+            "input": {
+              "summary": "This change replaces a parameterized query with string concatenation, introducing a SQL injection vulnerability. The previous code used a tagged-template parameterized query (`sql\\`...${userId}\\``), which safely escapes/binds the value. The new code builds a raw SQL string by concatenating `userId` directly into the query text before passing it to `db.query`, so any caller-controlled `userId` (e.g., from a request path/param/header) can inject arbitrary SQL (`' OR '1'='1`, stacked queries, UNION-based exfiltration, etc.), leading to data leakage, auth bypass, or data destruction. This is a straightforward, high-severity regression and should block merge. Recommend reverting to a parameterized/prepared statement (e.g., `db.query(\"SELECT * FROM users WHERE id = $1\", [userId])` or restoring the tagged-template `sql` helper) and adding a regression test asserting that a malicious `userId` value cannot alter query semantics.",
+              "comments": [
+                {
+                  "path": "src/db.ts",
+                  "line": 2,
+                  "severity": "blocking",
+                  "body": "SQL injection regression: `userId` is concatenated directly into the query string instead of being passed as a bound parameter. Any caller-controlled `userId` can inject arbitrary SQL (e.g. `1 OR 1=1`, stacked statements, UNION-based data exfiltration), exposing all user data or worse. The prior version used a parameterized tagged-template query, which was safe.",
+                  "suggestion": "const rows = await db.query(\"SELECT * FROM users WHERE id = $1\", [userId]);"
+                }
+              ]
+            },
+            "name": "submit_pr_review"
+          }
+        ]
+      },
+      {
+        "text": "I've submitted the review. Summary of findings:\n\n**Blocking issue:** The diff replaces a safe parameterized query (`sql\\`SELECT * FROM users WHERE id = ${userId}\\``) with raw string concatenation (`\"SELECT * FROM users WHERE id = \" + userId`) passed to `db.query`. This reintroduces a classic SQL injection vulnerability — any attacker-controlled `userId` value can alter query semantics (e.g., `1 OR 1=1`, UNION-based exfiltration, or stacked statements depending on the driver), potentially exposing or corrupting all user data.\n\nRecommended fix: use a parameterized/prepared statement (`db.query(\"SELECT * FROM users WHERE id = $1\", [userId])`) or restore the original tagged-template `sql` call, plus add a regression test with a malicious `userId` payload to prevent recurrence."
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+import { defineEvalConfig } from "eve/evals";
+
+export default defineEvalConfig({
+  // Deterministic evals need no judge model. Add `judge`, `reporters`, and
+  // concurrency settings here when introducing live or judged evals.
+  timeoutMs: 120_000,
+});

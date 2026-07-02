@@ -1,0 +1,15 @@
+import { connectSlackCredentials } from "@vercel/connect/eve";
+import { slackChannel } from "eve/channels/slack";
+
+// Slack credentials flow through Vercel Connect — there is no SLACK_BOT_TOKEN
+// or SLACK_SIGNING_SECRET to manage. One-time setup (details in
+// node_modules/eve/docs/channels/slack.mdx):
+//
+//   vercel connect create slack --triggers
+//   vercel connect detach <uid> --yes
+//   vercel connect attach <uid> --triggers --trigger-path /eve/v1/slack --yes
+//
+// Replace the client UID below with the one `vercel connect create` printed.
+export default slackChannel({
+  credentials: connectSlackCredentials("slack/{{name}}"),
+});

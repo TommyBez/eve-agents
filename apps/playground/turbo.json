@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["PLAYGROUND_*", "NODE_ENV"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    }
+  }
+}

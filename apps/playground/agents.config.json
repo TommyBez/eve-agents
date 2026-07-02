@@ -1,0 +1,12 @@
+{
+  "$schema": "./agents.config.schema.json",
+  "agents": [
+    {
+      "id": "code-reviewer",
+      "title": "Code Reviewer",
+      "description": "Reviews GitHub pull requests",
+      "target": { "kind": "local", "port": 2000 },
+      "enabled": true
+    }
+  ]
+}

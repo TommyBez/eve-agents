@@ -1,0 +1,100 @@
+# Nightly live-model evals (tag: live) across every app.
+#
+# INFORMATIONAL ONLY — do NOT mark this workflow as a required status check.
+# It exercises real models, so it can flake or drift with provider behavior; failures open/update
+# a tracking issue ("Nightly live evals failing") instead of blocking merges.
+#
+# Required secret:
+#   - AI_GATEWAY_API_KEY — Vercel AI Gateway key used by `eve eval` for live model calls
+# Optional (remote cache, harmless when absent): TURBO_TOKEN secret + TURBO_TEAM variable.
+name: Live evals
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # nightly, 03:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  live-evals:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Everything after `--` is passed through to each package's `eval` script
+      # (verified: turbo forwards these as CLI arguments to `eve eval`).
+      - name: Run live evals
+        run: pnpm turbo run eval --continue -- --tag live --strict --junit eval-junit.xml
+
+      - name: Upload eval artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-eval-results-${{ github.run_id }}
+          path: |
+            **/eval-junit.xml
+            **/.eve/evals/**
+          # .eve is a dotdir; v4 skips hidden files unless this is set.
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # Create-or-update a tracking issue instead of relying on anyone watching the Actions tab.
+      - name: Open or update tracking issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "Nightly live evals failing";
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              `Live evals (tag \`live\`) failed on ${new Date().toISOString()}.`,
+              "",
+              `Run: ${runUrl}`,
+              "",
+              "JUnit results are attached to the run as the `live-eval-results` artifact.",
+              "Reproduce locally with `pnpm turbo run eval -- --tag live --strict` (needs `AI_GATEWAY_API_KEY`).",
+            ].join("\n");
+
+            // Dedupe by title among open issues.
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = issues.find((i) => i.title === title && !i.pull_request);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ["evals", "automated"],
+              });
+            }

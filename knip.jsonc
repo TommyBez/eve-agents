@@ -1,0 +1,65 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // Dead-code / unused-dependency detection. Run with `pnpm exec knip`.
+  // Knip respects .gitignore by default, so generated trees (.eve, .output,
+  // .workflow-data, .turbo, dist) are already excluded. Handlebars templates
+  // under turbo/generators/templates are never matched by the js/ts globs.
+  "workspaces": {
+    ".": {
+      "entry": [
+        // Each script is an independently-run executable, not a library.
+        "scripts/*.mjs",
+        // Plop generator behind `pnpm agent:new` (turbo gen agent).
+        "turbo/generators/config.ts"
+      ]
+    },
+    "apps/playground": {
+      // Next.js app (not an eve agent) — knip's Next plugin autodetects the
+      // app-router entries (pages, layouts, route handlers).
+      "entry": [
+        // Vendored UI kit (AI Elements + shadcn primitives copied from the
+        // eve 0.18 web scaffold): treated as entry points so their unused
+        // exports are not flagged, while their dependency usage still counts.
+        "components/**/*.tsx"
+      ]
+    },
+    "apps/*": {
+      // Eve discovers these by filesystem convention — there is no classic
+      // "main" that imports them, so knip must treat each as an entry point.
+      // Vitest config/tests are covered by knip's built-in vitest plugin.
+      "entry": [
+        "agent/agent.ts",
+        "agent/channels/*.ts",
+        "agent/tools/*.ts",
+        "agent/schedules/*.ts",
+        "agent/connections/*.ts",
+        "agent/hooks/*.ts",
+        "agent/instrumentation.ts",
+        "evals/evals.config.ts",
+        "evals/**/*.eval.ts"
+      ],
+      "ignoreDependencies": [
+        // Part of the eve scaffold's baseline dependency set: apps opt into
+        // it for channel/connection auth, and scripts/check-scaffold-drift.mjs
+        // requires app package.json files to keep matching the scaffold
+        // (extraDependencies: []), so it may legitimately be unimported.
+        "@vercel/connect"
+      ]
+    },
+    "packages/eval-fixtures": {
+      // Just-in-time TS library: apps import it through the package.json
+      // "exports" entry. Vitest config/tests are covered by the vitest plugin.
+      "entry": ["src/index.ts"]
+    },
+    "packages/typescript-config": {
+      // JSON-only config package (base.json consumed via tsconfig "extends").
+      // No js/ts source to analyze; declare it empty so nothing is flagged.
+      // knip parses nextjs.json as a tsconfig and reports its
+      // `plugins: [{ "name": "next" }]` entry as an unresolved import; next
+      // is a dependency of the consuming app, not of this JSON-only package.
+      "entry": [],
+      "project": [],
+      "ignoreUnresolved": ["next"]
+    }
+  }
+}

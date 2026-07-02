@@ -1,8 +1,13 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "envMode": "loose",
+  "globalDependencies": ["pnpm-workspace.yaml", ".npmrc"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".eve/**", ".output/**", ".vercel/output/**"]
     },
     "dev": {
       "cache": false,
@@ -11,13 +16,26 @@
     "eval": {
       "cache": false
     },
+    "eval:ci": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "eval:record": {
+      "cache": false
+    },
     "info": {
       "cache": false
+    },
+    "lint": {
+      "outputs": []
     },
     "start": {
       "dependsOn": ["build"],
       "cache": false,
       "persistent": true
+    },
+    "test": {
+      "outputs": []
     },
     "typecheck": {
       "dependsOn": ["^build"],

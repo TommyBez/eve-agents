@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Playground agents config",
+  "description": "Agents the playground control-plane can chat with and inspect. Loaded and validated by lib/agents.ts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agents"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/agent" }
+    }
+  },
+  "definitions": {
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "description", "target"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "URL-safe identifier; also the proxy path segment (/api/agents/<id>). For local targets it should match the app directory under apps/*."
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Disabled agents are listed but not proxied."
+        },
+        "target": {
+          "oneOf": [
+            { "$ref": "#/definitions/localTarget" },
+            { "$ref": "#/definitions/urlTarget" }
+          ]
+        }
+      }
+    },
+    "localTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "port"],
+      "properties": {
+        "kind": { "const": "local" },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Resolves to http://127.0.0.1:<port> (an `eve dev`/`eve start` server on this machine). A PLAYGROUND_<CONSTANT_CASE_ID>_URL env var overrides this with a full base URL — how a deployed playground reaches the agent; without it, loopback targets show as 'not available in this deployment' on Vercel."
+        }
+      }
+    },
+    "urlTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url"],
+      "properties": {
+        "kind": { "const": "url" },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL of a deployed eve agent (origin where /eve/v1/* is mounted). A PLAYGROUND_<CONSTANT_CASE_ID>_URL env var, when set, overrides this per deployment."
+        },
+        "authHeaderEnv": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "description": "Name of a server-side env var holding the full Authorization header value (e.g. \"Bearer xyz\") the proxy attaches. Optional: PLAYGROUND_<CONSTANT_CASE_ID>_AUTH is always read as the default."
+        }
+      }
+    }
+  }
+}

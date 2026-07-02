@@ -1,0 +1,10 @@
+import { expect, it } from "vitest";
+import { env } from "../agent/lib/env.js";
+
+const LOG_LEVELS = ["debug", "info", "warn", "error"];
+
+it("parses the environment lazily and applies defaults", () => {
+  // env() must not throw with zero env vars set.
+  const level = env().{{constantCase name}}_LOG_LEVEL;
+  expect(LOG_LEVELS).toContain(level);
+});

@@ -10,12 +10,12 @@ regressions, security issues, rollout risk, and materially missing tests.
 
 ## How it works
 
-1. Install this agent into an existing Eve app.
-2. Deploy the Eve app so GitHub can reach it over HTTPS.
-3. Create and install a GitHub App for the repositories you want reviewed.
-4. Point the GitHub App webhook to `/eve/v1/github`.
-5. Subscribe the GitHub App to PR comment events.
-6. Comment on a pull request:
+1. Deploy this app so GitHub can reach it over HTTPS (see
+   [../../docs/deployment.md](../../docs/deployment.md)).
+2. Create and install a GitHub App for the repositories you want reviewed.
+3. Point the GitHub App webhook to `/eve/v1/github`.
+4. Subscribe the GitHub App to PR comment events.
+5. Comment on a pull request:
 
 ```md
 @code-reviewer review this
@@ -83,8 +83,9 @@ mention-driven workflow.
 
 ## Environment
 
-The registry installs a `.env.example` template. Put real secret values in your
-deployment environment.
+Every variable this app reads is listed with comments in
+[.env.example](./.env.example). Put real secret values in your deployment
+environment, never in the repo.
 
 Set the GitHub App credentials:
 
@@ -177,8 +178,55 @@ Common setup failures:
 
 ```bash
 pnpm install
-pnpm dev
+pnpm --filter code-reviewer run dev
 ```
 
-Run `pnpm run info` to inspect the Eve surface and `pnpm run build` before opening a PR.
-Use `pnpm run eval -- --skip-report` for lightweight agent behavior checks.
+`pnpm --filter code-reviewer run info` inspects the eve surface. Before
+opening a PR, run the repo verification loop (lint, typecheck, build, test,
+deterministic evals) — see the root `AGENTS.md`.
+
+## Testing
+
+There are three test tiers; the first two need no API keys or env vars. The
+repo-wide testing matrix and surface-specific recipes live in
+[../../docs/testing.md](../../docs/testing.md).
+
+### Unit tests (`tests/`)
+
+```bash
+pnpm --filter code-reviewer run test
+```
+
+Vitest over the pure logic in `agent/lib/` (rate-limit config parsing,
+failure-mode decisions, typed env access).
+
+### Deterministic evals (`evals/deterministic/`, tag `ci`)
+
+```bash
+pnpm --filter code-reviewer run eval:ci
+```
+
+Runs `eve eval --tag ci --strict` with `EVE_MOCK_MODEL=1`, which swaps the
+model for a deterministic fixture defined in `agent/agent.ts`. The evals
+exercise eve's real runtime — session protocol, tool wiring, and the
+`submit_pr_review` contract — without a provider call, so they run on every
+PR in CI.
+
+### Live evals (`evals/live/`, tag `live`)
+
+```bash
+pnpm --filter code-reviewer exec eve eval --tag live --strict
+```
+
+Behavioral checks against the real production model. They need
+`AI_GATEWAY_API_KEY` (or Vercel OIDC) and run nightly or on demand, not on
+every PR. `pnpm --filter code-reviewer exec eve eval --list` shows every eval
+with its tags.
+
+## Deployment
+
+This app deploys like every app in this repo: one Vercel project with root
+directory `apps/code-reviewer`, via `eve link` / `eve deploy`. See
+[../../docs/deployment.md](../../docs/deployment.md) for the playbook and the
+production checklist, and the [deployment checklist](#deployment-checklist)
+above for the GitHub-specific pieces.

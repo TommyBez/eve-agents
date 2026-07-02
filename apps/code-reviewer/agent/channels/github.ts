@@ -1,13 +1,14 @@
 import {
   defaultGitHubAuth,
-  type GitHubJsonObject,
-  githubChannel,
   type GitHubChannelState,
   type GitHubEventContext,
   type GitHubInboundContext,
+  type GitHubJsonObject,
   type GitHubThread,
+  githubChannel,
 } from "eve/channels/github";
 import { toolResultFrom } from "eve/tools";
+import { env } from "../lib/env.js";
 import {
   checkCodeReviewRateLimit,
   claimReviewPublication,
@@ -19,7 +20,7 @@ import submitPrReviewTool, {
   type SubmitPrReviewOutput,
 } from "../tools/submit_pr_review.js";
 
-const BOT_NAME = process.env.GITHUB_APP_SLUG || "code-reviewer";
+const BOT_NAME = env().GITHUB_APP_SLUG || "code-reviewer";
 const BOT_MENTION_PATTERN = new RegExp(
   `@${escapeRegExp(BOT_NAME)}(?=$|[^A-Za-z0-9_-])`,
   "i",
@@ -154,7 +155,9 @@ async function maybePostCooldownReply(
   }
 }
 
-function formatCooldownReply(decision: Extract<RateLimitDecision, { allowed: false }>) {
+function formatCooldownReply(
+  decision: Extract<RateLimitDecision, { allowed: false }>,
+) {
   if (decision.reason === "rate_limit_unavailable") {
     return `\`${BOT_NAME}\` cannot run because rate limiting is unavailable for this repository.`;
   }
@@ -246,7 +249,9 @@ async function publishFallbackReview(
   );
 }
 
-function toGitHubReviewComment(comment: SubmitPrReviewComment): GitHubJsonObject {
+function toGitHubReviewComment(
+  comment: SubmitPrReviewComment,
+): GitHubJsonObject {
   return {
     body: formatInlineCommentBody(comment),
     line: comment.line,
@@ -312,7 +317,9 @@ function splitCommentBody(message: string) {
     startIndex < message.length;
     startIndex += GITHUB_COMMENT_CHUNK_SIZE
   ) {
-    chunks.push(message.slice(startIndex, startIndex + GITHUB_COMMENT_CHUNK_SIZE));
+    chunks.push(
+      message.slice(startIndex, startIndex + GITHUB_COMMENT_CHUNK_SIZE),
+    );
   }
 
   return chunks;

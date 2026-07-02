@@ -1,0 +1,89 @@
+# CI — the same verification loop as `pnpm verify` (turbo run lint typecheck build test eval:ci).
+#
+# Deterministic by design: eval:ci uses mock-model evals, so NO secrets are required for a
+# green run. Optional (speeds things up via Vercel Remote Cache, harmless when absent):
+#   - secret  TURBO_TOKEN — Vercel access token
+#   - variable TURBO_TEAM — Vercel team slug
+#
+# Note: `turbo boundaries` is intentionally NOT run here — it flags eve-generated
+# `.eve/nitro` build output (which imports from node_modules/.pnpm via relative paths) as a
+# cross-package violation whenever build artifacts exist, and offers no way to exclude
+# generated files. Upstream: https://github.com/vercel/turborepo/discussions/9435
+# (TODO(maintainer): swap in the filed issue URL). Until fixed, the "Cross-app import
+# check" step below enforces app isolation via scripts/check-cross-app-imports.mjs.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Empty values are fine: turbo simply runs without remote cache.
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: `--affected` resolves the merge base against the base branch
+          # (shallow clones make turbo fall back to running everything).
+          fetch-depth: 0
+
+      # No `version:` — pnpm/action-setup reads `packageManager` from package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          # Caches the pnpm store (works with or without Turbo remote cache).
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Stand-in for `turbo boundaries` (see header note): apps must not import other apps.
+      - name: Cross-app import check
+        run: node scripts/check-cross-app-imports.mjs
+
+      # AGENTS.md hard rule 3: every env var an app reads is listed in its .env.example.
+      - name: Env contract check
+        run: node scripts/check-env-contract.mjs
+
+      # Dead code / unused dependencies (~1s; config in knip.jsonc).
+      - name: Knip
+        run: pnpm exec knip --no-config-hints
+
+      # PRs: only packages affected vs. the base branch (turbo auto-detects GITHUB_BASE_REF).
+      - name: Verify (affected)
+        if: github.event_name == 'pull_request'
+        run: pnpm turbo run lint typecheck build test eval:ci --affected --continue
+
+      # Pushes to main: full run, no --affected.
+      - name: Verify (all)
+        if: github.event_name == 'push'
+        run: pnpm turbo run lint typecheck build test eval:ci --continue
+
+      # Best-effort: eve writes eval results (incl. JUnit XML when requested) under .eve/evals.
+      - name: Upload eval artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_id }}
+          path: |
+            **/.eve/evals/**
+            **/eval-junit.xml
+          # .eve is a dotdir; v4 skips hidden files unless this is set.
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14
