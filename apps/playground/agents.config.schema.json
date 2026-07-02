@@ -48,7 +48,7 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 65535,
-          "description": "Resolves to http://127.0.0.1:<port> (an `eve dev`/`eve start` server on this machine)."
+          "description": "Resolves to http://127.0.0.1:<port> (an `eve dev`/`eve start` server on this machine). A PLAYGROUND_<CONSTANT_CASE_ID>_URL env var overrides this with a full base URL — how a deployed playground reaches the agent; without it, loopback targets show as 'not available in this deployment' on Vercel."
         }
       }
     },
@@ -61,12 +61,12 @@
         "url": {
           "type": "string",
           "format": "uri",
-          "description": "Base URL of a deployed eve agent (origin where /eve/v1/* is mounted)."
+          "description": "Base URL of a deployed eve agent (origin where /eve/v1/* is mounted). A PLAYGROUND_<CONSTANT_CASE_ID>_URL env var, when set, overrides this per deployment."
         },
         "authHeaderEnv": {
           "type": "string",
           "pattern": "^[A-Z][A-Z0-9_]*$",
-          "description": "Name of a server-side env var holding the full Authorization header value (e.g. \"Bearer xyz\") the proxy attaches. Convention: PLAYGROUND_<SCREAMING_SNAKE_ID>_AUTH."
+          "description": "Name of a server-side env var holding the full Authorization header value (e.g. \"Bearer xyz\") the proxy attaches. Optional: PLAYGROUND_<CONSTANT_CASE_ID>_AUTH is always read as the default."
         }
       }
     }

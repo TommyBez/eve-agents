@@ -29,7 +29,10 @@ export type AgentHealth =
       readonly state: "unhealthy";
       readonly detail: string;
       readonly checkedAt: number;
-    };
+    }
+  // Not reachable from this deployment (loopback target, no env override);
+  // never polled — it would only produce a misleading red badge.
+  | { readonly state: "unavailable" };
 
 /** Serializable agent descriptor passed from server components to the shell. */
 export type ShellAgent = {
@@ -39,6 +42,7 @@ export type ShellAgent = {
   readonly enabled: boolean;
   readonly targetLabel: string;
   readonly dangling: boolean;
+  readonly unavailable: boolean;
 };
 
 const HealthContext = createContext<ReadonlyMap<string, AgentHealth> | null>(
@@ -72,12 +76,28 @@ export function HealthProvider({
   readonly agents: readonly ShellAgent[];
   readonly children: ReactNode;
 }) {
-  const enabledIds = useMemo(
-    () => agents.filter((agent) => agent.enabled).map((agent) => agent.id),
+  // Unavailable agents (unreachable from this deployment) are never polled;
+  // they sit in the map with a static neutral state instead.
+  const pollableIds = useMemo(
+    () =>
+      agents
+        .filter((agent) => agent.enabled && !agent.unavailable)
+        .map((agent) => agent.id),
+    [agents],
+  );
+  const unavailableIds = useMemo(
+    () =>
+      agents
+        .filter((agent) => agent.enabled && agent.unavailable)
+        .map((agent) => agent.id),
     [agents],
   );
   const [health, setHealth] = useState<ReadonlyMap<string, AgentHealth>>(
-    () => new Map(enabledIds.map((id) => [id, { state: "checking" }])),
+    () =>
+      new Map<string, AgentHealth>([
+        ...pollableIds.map((id) => [id, { state: "checking" }] as const),
+        ...unavailableIds.map((id) => [id, { state: "unavailable" }] as const),
+      ]),
   );
 
   useEffect(() => {
@@ -85,9 +105,18 @@ export function HealthProvider({
 
     const sweep = async () => {
       const results = await Promise.all(
-        enabledIds.map(async (id) => [id, await checkOne(id)] as const),
+        pollableIds.map(async (id) => [id, await checkOne(id)] as const),
       );
-      if (!cancelled) setHealth(new Map(results));
+      if (!cancelled) {
+        setHealth(
+          new Map<string, AgentHealth>([
+            ...results,
+            ...unavailableIds.map(
+              (id) => [id, { state: "unavailable" }] as const,
+            ),
+          ]),
+        );
+      }
     };
 
     void sweep();
@@ -96,7 +125,7 @@ export function HealthProvider({
       cancelled = true;
       clearInterval(timer);
     };
-  }, [enabledIds]);
+  }, [pollableIds, unavailableIds]);
 
   return (
     <HealthContext.Provider value={health}>{children}</HealthContext.Provider>

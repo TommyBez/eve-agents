@@ -57,9 +57,15 @@ The single source of truth for which agents exist. Zod-validated at load by
   is missing render a "dangling" warning on the grid.
 - `target: { "kind": "url", "url": "https://…", "authHeaderEnv": "PLAYGROUND_<ID>_AUTH" }`
   → a deployed agent. `authHeaderEnv` (optional) names a server-side env var
-  holding the full `Authorization` header value the proxy attaches.
+  holding the full `Authorization` header value the proxy attaches;
+  `PLAYGROUND_<CONSTANT_CASE_ID>_AUTH` is always read as the fallback.
 - `enabled` (optional, default `true`): disabled agents are listed but not
   proxied.
+- Per agent, a `PLAYGROUND_<CONSTANT_CASE_ID>_URL` env var (full base URL)
+  overrides the config target — resolution order is env var → config. That is
+  how a deployed playground reaches `kind: "local"` agents.
+- The config is a **build-time static import** (`lib/agents.ts`): changing it
+  requires a rebuild/redeploy; `next dev` hot-reloads it.
 
 ## Proxy architecture
 
@@ -80,8 +86,27 @@ there are intentionally **no `NEXT_PUBLIC_*` vars** in this app.
 
 ## Env vars
 
-None are required. Remote targets read the var named by their
-`authHeaderEnv` via `process.env[name]` (see `.env.example`).
+None are required locally. All are server-side only (see `.env.example`):
+
+- `PLAYGROUND_<CONSTANT_CASE_ID>_URL` — per-agent base-URL override
+  (beats the config target). Required on a deployed playground for agents
+  whose config target is `kind: "local"`.
+- `PLAYGROUND_<CONSTANT_CASE_ID>_AUTH`, or the var named by `authHeaderEnv` —
+  full Authorization header value the proxy attaches for that agent. Read via
+  `process.env[name]` indirection (names derive from agent ids).
+- `PLAYGROUND_BASIC_AUTH` — opt-in `user:password`; when set, `proxy.ts`
+  gates every route (pages and `/api/agents/*`) behind HTTP Basic auth.
+  Unset = no-op (local dev unaffected).
+
+## Deployed
+
+The playground also deploys (own Vercel project, Root Directory
+`apps/playground` — see `docs/playground.md` § "Deploying the playground").
+A deployed playground is a **credential-bearing control plane**: enable
+Vercel Deployment Protection and/or `PLAYGROUND_BASIC_AUTH`, never deploy it
+open. On Vercel, an agent with a loopback target and no `PLAYGROUND_<ID>_URL`
+override renders as a neutral "not available in this deployment" state:
+health polling skips it and the proxy answers 503 with a JSON explanation.
 
 ## Layout
 
@@ -92,5 +117,9 @@ None are required. Remote targets read the var named by their
 - `components/ai-elements/`, `components/ui/` — vendored AI Elements + shadcn
   primitives copied from the eve 0.18 `--channel-web-nextjs` scaffold, already
   adapted to eve's approval states and streaming status.
-- `lib/agents.ts` — config loader/validator; `lib/info.ts` — server-side
-  `/eve/v1/info` fetcher.
+- `lib/agents.ts` — config loader/validator and the single target/credential
+  resolution point (env overrides, unavailable-in-deployment, dangling);
+  `lib/info.ts` — server-side `/eve/v1/info` fetcher.
+- `proxy.ts` — opt-in Basic-auth gate for deployed playgrounds (Next 16
+  proxy file, the middleware.ts successor; no-op when
+  `PLAYGROUND_BASIC_AUTH` is unset).

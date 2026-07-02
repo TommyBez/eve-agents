@@ -4,6 +4,7 @@ import {
   AlertTriangleIcon,
   ArrowUpRightIcon,
   BotIcon,
+  CloudOffIcon,
   GlobeIcon,
   ServerIcon,
 } from "lucide-react";
@@ -49,7 +50,11 @@ export function HomeOverview({
 function StatTiles({ agents }: { readonly agents: readonly ShellAgent[] }) {
   const health = useHealth();
   const enabled = agents.filter((agent) => agent.enabled);
-  const statuses = enabled.map((agent) => health.get(agent.id));
+  // Agents unreachable from this deployment are a fact of where the
+  // playground runs, not a failure — keep them out of the health math.
+  const reachable = enabled.filter((agent) => !agent.unavailable);
+  const unavailableCount = enabled.length - reachable.length;
+  const statuses = reachable.map((agent) => health.get(agent.id));
   const checking = statuses.some((status) => status?.state === "checking");
   const healthy = statuses.filter((status) => status?.state === "healthy");
   const latencies = healthy.map((status) =>
@@ -63,7 +68,7 @@ function StatTiles({ agents }: { readonly agents: readonly ShellAgent[] }) {
       : null;
   const lastChecked = statuses.reduce<number | null>(
     (latest, status) =>
-      status && status.state !== "checking"
+      status && (status.state === "healthy" || status.state === "unhealthy")
         ? Math.max(latest ?? 0, status.checkedAt)
         : latest,
     null,
@@ -83,20 +88,22 @@ function StatTiles({ agents }: { readonly agents: readonly ShellAgent[] }) {
       <StatTile
         label="Healthy now"
         loading={checking}
-        value={checking ? undefined : `${healthy.length}/${enabled.length}`}
+        value={checking ? undefined : `${healthy.length}/${reachable.length}`}
         valueClassName={
-          healthy.length === enabled.length && enabled.length > 0
+          healthy.length === reachable.length && reachable.length > 0
             ? "text-ok"
-            : healthy.length < enabled.length
+            : healthy.length < reachable.length
               ? "text-danger"
               : undefined
         }
         detail={
           checking
             ? "checking…"
-            : healthy.length === enabled.length
-              ? "all reachable"
-              : `${enabled.length - healthy.length} unreachable`
+            : healthy.length < reachable.length
+              ? `${reachable.length - healthy.length} unreachable`
+              : unavailableCount > 0
+                ? `${unavailableCount} not in this deployment`
+                : "all reachable"
         }
       />
       <StatTile
@@ -208,6 +215,17 @@ function AgentCard({ agent }: { readonly agent: ShellAgent }) {
         </p>
       ) : null}
 
+      {agent.unavailable ? (
+        <p className="flex items-start gap-2 rounded-md border border-dashed bg-muted/40 px-2.5 py-2 text-muted-foreground text-xs">
+          <CloudOffIcon className="mt-0.5 size-3.5 shrink-0" />
+          <span>
+            Not available in this deployment — set{" "}
+            <code className="font-mono">{urlOverrideEnvVar(agent.id)}</code> to
+            reach it.
+          </span>
+        </p>
+      ) : null}
+
       <div className="mt-auto flex items-center justify-between border-t pt-3">
         <span className="flex items-center gap-1.5 font-mono text-muted-foreground text-xs">
           {agent.targetLabel === "remote" ? (
@@ -227,7 +245,8 @@ function AgentCard({ agent }: { readonly agent: ShellAgent }) {
         ) : null}
       </div>
 
-      {status && status.state !== "checking" ? (
+      {status &&
+      (status.state === "healthy" || status.state === "unhealthy") ? (
         <p className="-mt-1 text-[10px] text-muted-foreground/70">
           last checked {relativeTime(status.checkedAt)}
         </p>
@@ -255,6 +274,8 @@ function StatusPill({ agentId }: { readonly agentId: string }) {
         state === "healthy" && "border-ok/30 bg-ok/10 text-ok",
         state === "unhealthy" && "border-danger/30 bg-danger/10 text-danger",
         state === "checking" && "text-muted-foreground",
+        // Neutral on purpose: unreachable from this deployment, not failing.
+        state === "unavailable" && "border-dashed text-muted-foreground",
       )}
       data-health={state}
     >
@@ -268,6 +289,11 @@ function StatusPill({ agentId }: { readonly agentId: string }) {
             : state}
     </span>
   );
+}
+
+/** Client-side mirror of lib/agents.ts `urlOverrideEnvName` (which is server-only). */
+function urlOverrideEnvVar(id: string): string {
+  return `PLAYGROUND_${id.toUpperCase().replaceAll("-", "_")}_URL`;
 }
 
 function EmptyRoster() {

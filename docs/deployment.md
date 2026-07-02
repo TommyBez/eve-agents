@@ -2,6 +2,8 @@
 
 Vercel-first: **one Vercel project per app**, deployed with the eve CLI or Git integration. Self-hosting is documented at the bottom as an escape hatch.
 
+This playbook covers **eve agent apps**. The playground is a plain Next.js app with its own deployment playbook — see [playground.md § Deploying the playground](./playground.md#deploying-the-playground).
+
 ## 1. First-time setup (per app)
 
 1. Create/link the Vercel project from the app directory:

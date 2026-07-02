@@ -7,7 +7,11 @@ import { HealthProvider, type ShellAgent } from "@/components/shell/health";
 import { Sidebar } from "@/components/shell/sidebar";
 import { THEME_INIT_SCRIPT, ThemeProvider } from "@/components/shell/theme";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { isDanglingLocalAgent, loadAgentsConfig } from "@/lib/agents";
+import {
+  isDanglingLocalAgent,
+  isUnavailableInDeployment,
+  loadAgentsConfig,
+} from "@/lib/agents";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -49,6 +53,7 @@ function shellAgents(): readonly ShellAgent[] {
     targetLabel:
       agent.target.kind === "local" ? `:${agent.target.port}` : "remote",
     title: agent.title,
+    unavailable: isUnavailableInDeployment(agent),
   }));
 }
 

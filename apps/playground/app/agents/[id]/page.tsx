@@ -1,10 +1,19 @@
-import { AlertTriangleIcon, ArrowLeftIcon, PowerOffIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  ArrowLeftIcon,
+  CloudOffIcon,
+  PowerOffIcon,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AgentView } from "@/app/_components/agent-view";
-import { loadAgentsConfig } from "@/lib/agents";
+import {
+  isUnavailableInDeployment,
+  loadAgentsConfig,
+  urlOverrideEnvName,
+} from "@/lib/agents";
 import { DiagnosticsPanel } from "./diagnostics-panel";
 
 // Chat + diagnostics are per-request; never prerender.
@@ -63,6 +72,30 @@ export default async function AgentPage({ params }: PageProps) {
               Set <code className="font-mono">"enabled": true</code> for{" "}
               <code className="font-mono">{agent.id}</code> in
               agents.config.json to chat with it.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (isUnavailableInDeployment(agent)) {
+    return (
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+        <BackLink />
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-16 text-center">
+          <span className="flex size-10 items-center justify-center rounded-lg border bg-card">
+            <CloudOffIcon className="size-4.5 text-muted-foreground/60" />
+          </span>
+          <div>
+            <p className="font-medium text-sm">
+              {agent.title} is not available in this deployment
+            </p>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Its target resolves to a loopback address that only exists on a
+              dev machine. Set{" "}
+              <code className="font-mono">{urlOverrideEnvName(agent.id)}</code>{" "}
+              to a reachable base URL to use it here.
             </p>
           </div>
         </div>

@@ -3,6 +3,7 @@ import type { ShellAgent } from "@/components/shell/health";
 import {
   type AgentEntry,
   isDanglingLocalAgent,
+  isUnavailableInDeployment,
   loadAgentsConfig,
 } from "@/lib/agents";
 import { HomeOverview } from "./_components/home-overview";
@@ -42,6 +43,7 @@ function toShellAgents(agents: readonly AgentEntry[]): readonly ShellAgent[] {
     targetLabel:
       agent.target.kind === "local" ? `:${agent.target.port}` : "remote",
     title: agent.title,
+    unavailable: isUnavailableInDeployment(agent),
   }));
 }
 

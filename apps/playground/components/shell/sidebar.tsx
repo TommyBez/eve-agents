@@ -203,6 +203,9 @@ export function HealthDot({
           state === "checking" && "animate-pulse bg-muted-foreground/60",
           state === "healthy" && "bg-ok",
           state === "unhealthy" && "bg-danger",
+          // Neutral hollow dot: not reachable from this deployment, which is
+          // a fact about the deployment, not a failure of the agent.
+          state === "unavailable" && "border border-muted-foreground/40",
         )}
       />
     </span>

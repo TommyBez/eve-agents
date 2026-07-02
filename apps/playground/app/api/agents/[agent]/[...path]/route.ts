@@ -1,9 +1,11 @@
 import type { NextRequest } from "next/server";
 import {
   findAgent,
+  isUnavailableInDeployment,
   loadAgentsConfig,
   resolveAuthHeader,
   resolveBaseUrl,
+  urlOverrideEnvName,
 } from "@/lib/agents";
 
 /**
@@ -13,8 +15,9 @@ import {
  * talk to an agent directly. `useEveAgent({ host: "/api/agents/<id>" })`
  * sends everything here instead; we forward it to the agent's baseUrl and
  * stream the response body straight through (NDJSON event streams included).
- * Credentials stay server-side: for `url` targets we attach the
- * Authorization header named by `authHeaderEnv` in agents.config.json.
+ * Credentials stay server-side: the proxy attaches the Authorization header
+ * from the env var named by `authHeaderEnv` in agents.config.json, or the
+ * conventional PLAYGROUND_<ID>_AUTH.
  */
 
 // Always resolve the config and stream at request time; never prerender.
@@ -70,7 +73,19 @@ async function proxy(
     );
   }
 
-  const base = resolveBaseUrl(agent.target);
+  // A deployed playground cannot reach an agent that only exists on a dev
+  // machine (loopback target, no env override). Say so instead of timing out.
+  if (isUnavailableInDeployment(agent)) {
+    return Response.json(
+      {
+        ok: false,
+        error: `Agent "${agentId}" is not available in this deployment: its target resolves to a loopback address on the server. Set ${urlOverrideEnvName(agentId)} to a reachable base URL.`,
+      },
+      { status: 503 },
+    );
+  }
+
+  const base = resolveBaseUrl(agent);
   const search = request.nextUrl.search;
   const url = `${base}/${path.map(encodeURIComponent).join("/")}${search}`;
 
@@ -79,7 +94,7 @@ async function proxy(
     const value = request.headers.get(name);
     if (value) headers.set(name, value);
   }
-  const auth = resolveAuthHeader(agent.target);
+  const auth = resolveAuthHeader(agent);
   if (auth) headers.set("authorization", auth);
 
   // Buffer the (small JSON) request body instead of streaming it, so we do

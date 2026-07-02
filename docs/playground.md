@@ -62,7 +62,33 @@ Skipped with a warning, never an error: disabled entries, `url`-kind targets (no
 
 ## External (`url`-kind) targets: proxy and credentials
 
-For `{ "kind": "url", ... }` targets the playground proxies chat traffic server-side to the deployed agent. If the deployment requires auth (it should — see `docs/deployment.md` on replacing `placeholderAuth()`), set `authHeaderEnv` to the name of an env var and give the playground that var (e.g. in `apps/playground/.env.local`). Its value is the **full Authorization header value** (e.g. `Bearer xyz`), attached by the proxy on every request; it never reaches the browser. The conventional name is `PLAYGROUND_<SCREAMING_SNAKE_ID>_AUTH`, which `playground:agents add --url` defaults to (`--auth-env <VAR>` overrides).
+For `{ "kind": "url", ... }` targets the playground proxies chat traffic server-side to the deployed agent. If the deployment requires auth (it should — see `docs/deployment.md` on replacing `placeholderAuth()`), set `authHeaderEnv` to the name of an env var and give the playground that var (e.g. in `apps/playground/.env.local`). Its value is the **full Authorization header value** (e.g. `Bearer xyz`), attached by the proxy on every request; it never reaches the browser. The conventional name is `PLAYGROUND_<CONSTANT_CASE_ID>_AUTH`, which `playground:agents add --url` defaults to (`--auth-env <VAR>` overrides) — and which the proxy always reads as a fallback even when `authHeaderEnv` is not set.
+
+### Env-var target overrides
+
+Every agent's base URL can be overridden per environment without touching the config: if `PLAYGROUND_<CONSTANT_CASE_ID>_URL` is set (a full base URL, e.g. `PLAYGROUND_CODE_REVIEWER_URL=https://code-reviewer.example.com`), it wins over the config `target`; otherwise the config target is used (`local` → `http://127.0.0.1:<port>`, `url` → the URL). An explicit override is always honored. Credentials follow the agent either way: `authHeaderEnv` if configured, else `PLAYGROUND_<CONSTANT_CASE_ID>_AUTH`. This is how a **deployed** playground reaches agents that are `kind: "local"` on dev machines.
+
+## Deploying the playground
+
+The playground is intended to be used locally **and** deployed. It is an ordinary Next.js app, so it gets its own Vercel project — it does not use eve's build output like the agent apps in [deployment.md](./deployment.md).
+
+> ⚠️ **A deployed playground is a credential-bearing control plane.** It holds the Authorization header for every registered agent and will proxy chat traffic to all of them for anyone who can reach it. **Never deploy it open.** Enable [Vercel Deployment Protection](https://vercel.com/docs/deployment-protection) (the recommended primary lock) and/or set `PLAYGROUND_BASIC_AUTH` — ideally both for production.
+
+Setup:
+
+1. Create a Vercel project for the repo with **Root Directory = `apps/playground`** (framework preset: Next.js).
+2. Set the **Ignored Build Step** to `npx turbo-ignore` so commits touching only other apps do not redeploy the playground.
+3. Set env vars in the Vercel project (`<ID>` is the CONSTANT_CASE agent id — `code-reviewer` → `CODE_REVIEWER`):
+
+   | Var | Meaning |
+   | --- | --- |
+   | `PLAYGROUND_<ID>_URL` | Full base URL where **this deployment** reaches agent `<id>`. Overrides the config target; required for agents whose config target is `kind: "local"`. |
+   | `PLAYGROUND_<ID>_AUTH` (or the var named by `authHeaderEnv`) | Full Authorization header value the proxy attaches for that agent. |
+   | `PLAYGROUND_BASIC_AUTH` | Opt-in `user:password`. When set, **every** route — pages and `/api/agents/*` — requires HTTP Basic auth; when unset, the app is open (fine locally, never fine deployed without Deployment Protection). |
+
+Semantics of the **"not available in this deployment"** state: when the playground runs on Vercel and an agent — with no `PLAYGROUND_<ID>_URL` override — resolves to a loopback address (i.e. a `kind: "local"` dev target), the playground marks it *unavailable* rather than pretending it is failing. The home card and sidebar show a neutral state naming the env var to set, health polling skips the agent (no red badge), and the proxy answers `503` with a JSON explanation. Locally nothing changes.
+
+Note that `agents.config.json` is imported **at build time** (the roster is part of the deploy), so changing the config means redeploying; `next dev` hot-reloads it as before.
 
 ## Troubleshooting
 

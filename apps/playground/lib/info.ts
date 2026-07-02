@@ -80,9 +80,9 @@ export type InfoResult =
  * server-held credentials the proxy route uses. Runs only on the server.
  */
 export async function fetchAgentInfo(agent: AgentEntry): Promise<InfoResult> {
-  const base = resolveBaseUrl(agent.target);
+  const base = resolveBaseUrl(agent);
   const headers = new Headers({ accept: "application/json" });
-  const auth = resolveAuthHeader(agent.target);
+  const auth = resolveAuthHeader(agent);
   if (auth) headers.set("authorization", auth);
 
   let response: Response;
