@@ -71,3 +71,15 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 - `eve info` for discovery problems; `eve build` prints full diagnostics on failure.
 - Eval failures: read the artifacts under `apps/<app>/.eve/evals/<timestamp>/` — the console output is intentionally terse.
 - Route the symptom through `.agents/skills/eve/SKILL.md` to the right doc under `node_modules/eve/docs/`.
+
+## Evals start failing with `EMFILE: too many open files`
+
+**Symptom:** `eve eval` (or `eval:ci`) fails with `[eve:dev] failed to prune stale runtime snapshots: EMFILE: too many open files, open '.../.workflow-data/events/...'`.
+
+**Cause:** `.workflow-data/` (eve's local durable session state) accumulates event files with every eval/dev run and is never garbage-collected; once the directory outgrows the file-descriptor limit (`ulimit -n`), eve's own startup prune crashes. `pnpm doctor` warns when an app is approaching this.
+
+**Fix:** delete the app's local state — it is dev-only and safe to remove:
+
+```bash
+rm -rf apps/<app>/.workflow-data
+```

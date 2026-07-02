@@ -217,6 +217,24 @@ function checkAppEnvFiles(apps) {
   }
 }
 
+// eve never garbage-collects .workflow-data; once events/ outgrows the fd
+// limit (ulimit -n), eve's startup prune crashes with EMFILE. Warn early.
+function checkWorkflowDataGrowth(apps) {
+  for (const app of apps) {
+    const eventsDir = path.join(APPS_DIR, app, ".workflow-data", "events");
+    if (!existsSync(eventsDir)) continue;
+    const count = readdirSync(eventsDir).length;
+    if (count > 1_500) {
+      warn(
+        `apps/${app}: .workflow-data/events has ${count} files — eve eval will start failing with EMFILE`,
+        `Local dev-only session state; safe to delete. fix: rm -rf apps/${app}/.workflow-data`,
+      );
+    } else {
+      pass(`apps/${app}: .workflow-data size OK (${count} event files)`);
+    }
+  }
+}
+
 function checkGatewayKey(apps) {
   // biome-ignore lint/suspicious/noUndeclaredEnvVars: doctor probes the machine's environment directly; it is not a turbo task input.
   if (process.env.AI_GATEWAY_API_KEY) {
@@ -264,6 +282,7 @@ try {
   checkInstallState(pnpmOk);
   checkTurbo(pnpmOk);
   checkAppEnvFiles(apps);
+  checkWorkflowDataGrowth(apps);
   checkGatewayKey(apps);
   await checkNetwork();
 
