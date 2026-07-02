@@ -28,6 +28,14 @@ catalog:
   class-variance-authority: 0.7.1
   clsx: 2.1.1
   cmdk: 1.1.1
+  # --- apps/docs (Fumadocs documentation site) --------------------------------
+  # fumadocs-ui peer-depends on the exact same fumadocs-core version, so the
+  # three fumadocs packages are pinned and must be bumped in lockstep.
+  "@types/mdast": ^4.0.4
+  "@types/mdx": ^2.0.13
+  fumadocs-core: 16.10.7
+  fumadocs-mdx: 15.0.13
+  fumadocs-ui: 16.10.7
   lucide-react: 1.16.0
   motion: 12.40.0
   nanoid: 5.1.11

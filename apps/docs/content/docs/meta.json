@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "index",
+    "agents",
+    "adding-an-agent",
+    "testing",
+    "playground",
+    "deployment",
+    "conventions",
+    "troubleshooting"
+  ]
+}

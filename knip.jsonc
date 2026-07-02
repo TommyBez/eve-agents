@@ -13,6 +13,12 @@
         "turbo/generators/config.ts"
       ]
     },
+    "apps/docs": {
+      // Next.js + Fumadocs app (not an eve agent) — knip's Next plugin
+      // autodetects the app-router entries; source.config.ts is loaded by
+      // the fumadocs-mdx bundler/CLI, not imported from app code.
+      "entry": ["source.config.ts"]
+    },
     "apps/playground": {
       // Next.js app (not an eve agent) — knip's Next plugin autodetects the
       // app-router entries (pages, layouts, route handlers).
