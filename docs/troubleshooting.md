@@ -78,7 +78,7 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 
 **Cause:** `.workflow-data/` (eve's local durable session state) accumulates event files with every eval/dev run and is never garbage-collected; once the directory outgrows the file-descriptor limit (`ulimit -n`), eve's own startup prune crashes. `pnpm doctor` warns when an app is approaching this.
 
-**Fix:** delete the app's local state — it is dev-only and safe to remove:
+**Fix:** normally automatic — the `dev`/`eval*` scripts run `scripts/prune-eve-state.mjs` first, which removes the store once it passes 1,000 event files. If you hit the error anyway (e.g. running `eve` directly), delete the app's local state — it is dev-only and safe to remove:
 
 ```bash
 rm -rf apps/<app>/.workflow-data
