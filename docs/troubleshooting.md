@@ -74,6 +74,8 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 
 **Fix:** fix the test. To build anyway mid-refactor (diagnostics only), bypass the dependency graph: `pnpm exec turbo run build --filter <app> --only`.
 
+One constraint follows: unit tests must stay source-only and never require build output — `test → build → test` would be a dependency cycle. Tests that exercise built artifacts belong in the eval tiers (`eval:ci` already depends on `build`).
+
 ## Still stuck?
 
 - `eve info` for discovery problems; `eve build` prints full diagnostics on failure.
