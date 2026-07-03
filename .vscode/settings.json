@@ -30,8 +30,10 @@
     "**/.eve/**": true,
     "**/.next/**": true,
     "**/.output/**": true,
+    "**/.source/**": true,
     "**/.turbo/**": true,
-    "**/.workflow-data/**": true
+    "**/.workflow-data/**": true,
+    "**/dist/**": true
   },
 
   // .env.example files are the env contract; give them proper highlighting.
