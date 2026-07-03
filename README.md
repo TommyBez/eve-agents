@@ -28,9 +28,12 @@ pnpm playground:dev --mock  # …or chat with every registered agent in the brow
 
 # 4. Verify everything
 pnpm verify          # lint + typecheck + build + test + deterministic evals — no secrets needed
+pnpm fix             # auto-fix whatever lint/format complains about
 ```
 
 From there: fill in `agent/instructions.md`, add tools, and follow [docs/adding-an-agent.md](./docs/adding-an-agent.md) end to end.
+
+**Editor:** the repo ships [`.vscode/`](./.vscode) — Biome as the formatter (format on save), debug/launch configs for the playground and any agent's REPL, and the one recommended extension ([Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)) — so VS Code and Cursor are zero-config. `pnpm doctor` diagnoses everything else (Node/pnpm versions, install state, env files) with copy-paste fixes; `pnpm clean` resets all generated output when things get weird.
 
 ## Repo layout
 

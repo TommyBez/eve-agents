@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
   "envMode": "loose",
   "globalDependencies": ["pnpm-workspace.yaml", ".npmrc"],
   "tasks": {

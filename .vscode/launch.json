@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Whole local stack (every registered agent + playground UI) with the
+      // mock model — no API keys needed. Node debugger auto-attaches to the
+      // spawned eve/next processes.
+      "name": "Playground (mock)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm playground:dev --mock",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Agent REPL (pick app)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm --filter ${input:appName} dev",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run unit tests (pick app)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm --filter ${input:appName} test",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "appName",
+      "type": "promptString",
+      "description": "App name under apps/ (e.g. code-reviewer)",
+      "default": "code-reviewer"
+    }
+  ]
+}

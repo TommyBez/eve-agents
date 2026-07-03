@@ -51,7 +51,7 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 
 **Cause:** turbo caches task outputs by input hash. Inputs that aren't part of the hash (e.g. an edit to root `biome.json`, an env var not covered by the task's `env` wildcards) don't invalidate the cache. `pnpm-workspace.yaml` and `.npmrc` *are* global dependencies, so catalog changes do bust caches — config files outside that list may not.
 
-**Fix:** re-run with `--force` to bypass cache reads: `pnpm turbo run lint --force` (or the whole `verify` set). If a specific file keeps causing staleness, add it to `globalDependencies` in the root `turbo.json` or the task's `inputs`. Nuclear option: delete `.turbo/` and `node_modules/.cache/turbo`.
+**Fix:** re-run with `--force` to bypass cache reads: `pnpm turbo run lint --force` (or the whole `verify` set). If a specific file keeps causing staleness, add it to `globalDependencies` in the root `turbo.json` or the task's `inputs`. Nuclear option: `pnpm clean` removes every generated tree (`.turbo`, `.eve`, `.next`, `.output`, `dist`, …) without touching `.env` files; `pnpm clean --modules` also removes every `node_modules` (follow with `pnpm install`).
 
 ## Missing `AI_GATEWAY_API_KEY` (local vs deployed)
 
