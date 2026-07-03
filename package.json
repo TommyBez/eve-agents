@@ -28,7 +28,7 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "upgrade:eve": "node scripts/upgrade-eve.mjs",
-    "verify": "node scripts/check-cross-app-imports.mjs && node scripts/check-env-contract.mjs && knip --no-config-hints && turbo run lint typecheck build test eval:ci"
+    "verify": "turbo run check:imports check:env-contract knip lint typecheck build test eval:ci"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

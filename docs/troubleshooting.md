@@ -66,6 +66,14 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 - **On Vercel**, a linked project authenticates gateway model ids via OIDC automatically — no key to set. Only non-Vercel hosts need `AI_GATEWAY_API_KEY` (or a direct provider key with a provider model object; see [deployment.md](./deployment.md#self-hosting-escape-hatch)).
 - The eve CLI loads `.env`/`.env.local` from the **app root**, not the repo root — a key in the wrong directory is silently ignored.
 
+## `build` runs (or fails on) unit tests
+
+**Symptom:** `pnpm --filter <app> build` runs vitest first, and a red test blocks the build.
+
+**Cause:** intentional — `build.dependsOn` includes `test` (root `turbo.json`), so no build is ever produced (or cached, locally, in CI, or in the remote cache that Vercel deploy builds replay) from a package whose unit tests fail.
+
+**Fix:** fix the test. To build anyway mid-refactor (diagnostics only), bypass the dependency graph: `pnpm exec turbo run build --filter <app> --only`.
+
 ## Still stuck?
 
 - `eve info` for discovery problems; `eve build` prints full diagnostics on failure.
