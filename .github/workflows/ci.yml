@@ -1,4 +1,5 @@
-# CI — the same verification loop as `pnpm verify` (turbo run lint typecheck build test eval:ci).
+# CI — the same verification loop as `pnpm verify` (repo checks + turbo run lint typecheck
+# build test eval:ci; `build` depends on `test`, so no build is ever cached from red tests).
 #
 # Deterministic by design: eval:ci uses mock-model evals, so NO secrets are required for a
 # green run. Optional (speeds things up via Vercel Remote Cache, harmless when absent):
@@ -9,8 +10,8 @@
 # `.eve/nitro` build output (which imports from node_modules/.pnpm via relative paths) as a
 # cross-package violation whenever build artifacts exist, and offers no way to exclude
 # generated files. Upstream: https://github.com/vercel/turborepo/discussions/9435
-# (TODO(maintainer): swap in the filed issue URL). Until fixed, the "Cross-app import
-# check" step below enforces app isolation via scripts/check-cross-app-imports.mjs.
+# (TODO(maintainer): swap in the filed issue URL). Until fixed, the "Repo checks" step
+# below enforces app isolation via scripts/check-cross-app-imports.mjs.
 name: CI
 
 on:
@@ -51,27 +52,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Stand-in for `turbo boundaries` (see header note): apps must not import other apps.
-      - name: Cross-app import check
-        run: node scripts/check-cross-app-imports.mjs
-
-      # AGENTS.md hard rule 3: every env var an app reads is listed in its .env.example.
-      - name: Env contract check
-        run: node scripts/check-env-contract.mjs
-
-      # Dead code / unused dependencies (~1s; config in knip.jsonc).
-      - name: Knip
-        run: pnpm exec knip --no-config-hints
+      # Repo-wide checks, as turbo root tasks (cached; defined in turbo.json):
+      # cross-app imports (stand-in for `turbo boundaries`, see header note),
+      # env contract (AGENTS.md hard rule 3), and knip (dead code / unused deps).
+      # Deliberately a separate, unfiltered invocation: root tasks are skipped by
+      # --affected on app-only PRs (--filter overrides it rather than unioning),
+      # and these contracts must hold repo-wide on every change.
+      - name: Repo checks (imports, env contract, knip)
+        run: pnpm turbo run check:imports check:env-contract knip
 
       # PRs: only packages affected vs. the base branch (turbo auto-detects GITHUB_BASE_REF).
+      # --continue=dependencies-successful (not bare --continue = always): `build`
+      # depends on `test`, so a red test must skip that package's build — otherwise
+      # a build from failing tests lands in the remote cache, and Vercel deploy
+      # builds replay that cache ("Detected Turbo" + remote caching in build logs).
       - name: Verify (affected)
         if: github.event_name == 'pull_request'
-        run: pnpm turbo run lint typecheck build test eval:ci --affected --continue
+        run: pnpm turbo run lint typecheck build test eval:ci --affected --continue=dependencies-successful
 
       # Pushes to main: full run, no --affected.
       - name: Verify (all)
         if: github.event_name == 'push'
-        run: pnpm turbo run lint typecheck build test eval:ci --continue
+        run: pnpm turbo run lint typecheck build test eval:ci --continue=dependencies-successful
 
       # Best-effort: eve writes eval results (incl. JUnit XML when requested) under .eve/evals.
       - name: Upload eval artifacts

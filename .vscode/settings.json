@@ -1,0 +1,44 @@
+{
+  // Biome is the repo's only formatter/linter (biome.json). Format on save
+  // keeps `pnpm lint` (biome check) green without a separate format step.
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[javascriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[typescriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[json]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[jsonc]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[css]": { "editor.defaultFormatter": "biomejs.biome" },
+
+  // Generated trees: keep them out of search and the file watcher. They stay
+  // visible in the explorer on purpose (.eve/evals results are worth opening).
+  "search.exclude": {
+    "**/.eve": true,
+    "**/.next": true,
+    "**/.output": true,
+    "**/.source": true,
+    "**/.turbo": true,
+    "**/.workflow-data": true,
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/.eve/**": true,
+    "**/.next/**": true,
+    "**/.output/**": true,
+    "**/.source/**": true,
+    "**/.turbo/**": true,
+    "**/.workflow-data/**": true,
+    "**/dist/**": true
+  },
+
+  // .env.example files are the env contract; give them proper highlighting.
+  "files.associations": {
+    ".env.example": "properties",
+    "*.env.example": "properties"
+  }
+}

@@ -22,6 +22,8 @@ pnpm --filter <app> dev            # run one agent's TUI REPL
 pnpm playground:dev                # run every playground-registered agent + the playground UI (--mock: no keys)
 pnpm --filter <app> eval           # run one agent's evals (all tiers)
 pnpm --filter <app> test           # run one agent's unit tests
+pnpm fix                           # auto-fix lint + format repo-wide (biome check --write)
+pnpm clean                         # remove generated output (.turbo/.eve/.next/dist/…); --modules also removes node_modules
 ```
 
 `pnpm verify` is the single verification loop. CI runs the same tasks, so green locally means green in CI. It must pass with **no env vars and no secrets** — that is what the deterministic eval tier guarantees.

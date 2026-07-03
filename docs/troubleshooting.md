@@ -51,7 +51,7 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 
 **Cause:** turbo caches task outputs by input hash. Inputs that aren't part of the hash (e.g. an edit to root `biome.json`, an env var not covered by the task's `env` wildcards) don't invalidate the cache. `pnpm-workspace.yaml` and `.npmrc` *are* global dependencies, so catalog changes do bust caches — config files outside that list may not.
 
-**Fix:** re-run with `--force` to bypass cache reads: `pnpm turbo run lint --force` (or the whole `verify` set). If a specific file keeps causing staleness, add it to `globalDependencies` in the root `turbo.json` or the task's `inputs`. Nuclear option: delete `.turbo/` and `node_modules/.cache/turbo`.
+**Fix:** re-run with `--force` to bypass cache reads: `pnpm turbo run lint --force` (or the whole `verify` set). If a specific file keeps causing staleness, add it to `globalDependencies` in the root `turbo.json` or the task's `inputs`. Nuclear option: `pnpm clean` removes every generated tree (`.turbo`, `.eve`, `.next`, `.output`, `dist`, …) without touching `.env` files; `pnpm clean --modules` also removes every `node_modules` (follow with `pnpm install`).
 
 ## Missing `AI_GATEWAY_API_KEY` (local vs deployed)
 
@@ -65,6 +65,16 @@ For environment problems (wrong Node, broken install, missing env files), run `p
 - **Locally**, either run `/model` in the TUI (or `eve link`) to pull a credential into `.env.local` from a linked Vercel project, or set `AI_GATEWAY_API_KEY` in `.env.local`.
 - **On Vercel**, a linked project authenticates gateway model ids via OIDC automatically — no key to set. Only non-Vercel hosts need `AI_GATEWAY_API_KEY` (or a direct provider key with a provider model object; see [deployment.md](./deployment.md#self-hosting-escape-hatch)).
 - The eve CLI loads `.env`/`.env.local` from the **app root**, not the repo root — a key in the wrong directory is silently ignored.
+
+## `build` runs (or fails on) unit tests
+
+**Symptom:** `pnpm --filter <app> build` runs vitest first, and a red test blocks the build.
+
+**Cause:** intentional — `build.dependsOn` includes `test` (root `turbo.json`), so no build is ever produced (or cached, locally, in CI, or in the remote cache that Vercel deploy builds replay) from a package whose unit tests fail.
+
+**Fix:** fix the test. To build anyway mid-refactor (diagnostics only), bypass the dependency graph: `pnpm exec turbo run build --filter <app> --only`.
+
+One constraint follows: unit tests must stay source-only and never require build output — `test → build → test` would be a dependency cycle. Tests that exercise built artifacts belong in the eval tiers (`eval:ci` already depends on `build`).
 
 ## Still stuck?
 

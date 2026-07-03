@@ -1,10 +1,31 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
   "envMode": "loose",
   "globalDependencies": ["pnpm-workspace.yaml", ".npmrc"],
   "tasks": {
+    "//#check:imports": {
+      "inputs": ["scripts/check-cross-app-imports.mjs", "apps/**"],
+      "outputs": []
+    },
+    "//#check:env-contract": {
+      "inputs": ["scripts/check-env-contract.mjs", "apps/**"],
+      "outputs": []
+    },
+    "//#knip": {
+      "inputs": [
+        "knip.jsonc",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "apps/**",
+        "packages/**",
+        "scripts/**",
+        "turbo/**"
+      ],
+      "outputs": []
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "test"],
       "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".eve/**", ".output/**", ".vercel/output/**"]

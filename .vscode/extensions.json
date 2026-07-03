@@ -1,0 +1,8 @@
+{
+  "recommendations": ["biomejs.biome"],
+  // Prettier/ESLint would fight biome.json; this repo doesn't use them.
+  "unwantedRecommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
+}
